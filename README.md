@@ -1,0 +1,3 @@
+# smart-contract
+
+for EOS
