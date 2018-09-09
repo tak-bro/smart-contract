@@ -19,6 +19,16 @@ class buzzler: public eosio::contract {
                     const string&      univ,
                     const string&      major);
 
+        // @abi action
+        void update(const account_name account,
+                    const string&      nickname,
+                    const string&      univ,
+                    const string&      major,
+                    uint32_t     token);
+
+        // @abi action
+        void remove(const account_name account);
+
     private:
 
         // @abi table users
@@ -37,4 +47,4 @@ class buzzler: public eosio::contract {
         typedef eosio::multi_index<N(users), user> user_table;
 };
 
-EOSIO_ABI(buzzler, (hello)(create))
+EOSIO_ABI(buzzler, (hello)(create)(update)(remove))

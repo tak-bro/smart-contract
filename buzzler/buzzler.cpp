@@ -1,21 +1,23 @@
 #include<buzzler.hpp>
 
-void buzzler::hello(account_name user) {
+void buzzler::hello(account_name user)
+{
     print("Hello, ", name{user});
 }
 
 void buzzler::create(const account_name account,
                      const string&      nickname,
                      const string&      univ,
-                     const string&      major) {
+                     const string&      major)
+{
     require_auth(account);
 
-    // check account on profile_table
+    // check account on user_table
     user_table users(_self, _self);
     auto itr = users.find(account);
     eosio_assert(itr == users.end(), "Account already has a user");
 
-    // create profile
+    // create user
     users.emplace(account, [&](auto& p) {
         p.account  = account;
         p.nickname = nickname;
@@ -25,5 +27,47 @@ void buzzler::create(const account_name account,
         p.created_at = now();
     });
 
-    print(name{account}, " profile created");
+    // debug print
+    print(name{account}, " user created");
+}
+
+void buzzler::update(const account_name account,
+                     const string&      nickname,
+                     const string&      univ,
+                     const string&      major,
+                     uint32_t     token)
+{
+    require_auth(account);
+
+    // check account on user_table
+    user_table users(_self, _self);
+    auto itr = users.find(account);
+    eosio_assert(itr != users.end(), "Account does not has a user");
+
+    // update user
+    users.modify(itr, account, [&](auto& p) {
+        p.nickname = nickname;
+        p.univ     = univ;
+        p.major    = major;
+        p.token    = token;
+    });
+
+    // debug print
+    print(name{account}, " modified");
+}
+
+void buzzler::remove(const account_name account)
+{
+    require_auth(account);
+
+    // check account on user_table
+    user_table users(_self, _self);
+    auto itr = users.find(account);
+    eosio_assert(itr != users.end(), "Account does not has a user");
+
+    // remove user
+    users.erase(itr);
+
+    // debug print
+    print(name{account}, " user removed");
 }

@@ -15,6 +15,12 @@ $ cleos push action tak hello '["world"]' -p tak
 # Create new user
 $ cleos push action tak create '["tak", "taktak", "ajou", "cs"]' -p tak
 
+# Update user
+$ cleos push action tak update '["tak", "taktak2", "ajou", "cs", 1000000]' -p tak
+
+# Remove user
+$ cleos push action tak remove '["tak"]' -p tak
+
 # Check DB
 $ cleos get table tak tak users
 {
