@@ -21,6 +21,9 @@ $ cleos push action tak update '["tak", "taktak2", "ajou", "cs", 1000000]' -p ta
 # Remove user
 $ cleos push action tak remove '["tak"]' -p tak
 
+# Get user(print)
+$ cleos push action tak getuser '["tak"]' -p tak
+
 # Check DB
 $ cleos get table tak tak users
 {

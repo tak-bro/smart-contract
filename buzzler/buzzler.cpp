@@ -71,3 +71,18 @@ void buzzler::remove(const account_name account)
     // debug print
     print(name{account}, " user removed");
 }
+
+void buzzler::getuser(const account_name account)
+{
+    user_table users(_self, _self);
+    auto itr = users.find(account);
+
+    eosio_assert(itr != users.end(), "Account does not has a user");
+
+    // print user
+    print("Account: ", name{itr->account}, ", ");
+    print("Nickname: ", itr->nickname.c_str(), ", ");
+    print("Univ: ", itr->univ.c_str(), ", ");
+    print("Major: ", itr->major.c_str(), ", ");
+    print("Token: ", itr->token);
+}
