@@ -24,7 +24,7 @@ class buzzler: public eosio::contract {
                     const string&      nickname,
                     const string&      univ,
                     const string&      major,
-                    uint32_t     token);
+                    uint32_t           token);
 
         // @abi action
         void remove(const account_name account);

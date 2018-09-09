@@ -19,11 +19,11 @@ void buzzler::create(const account_name account,
 
     // create user
     users.emplace(account, [&](auto& p) {
-        p.account  = account;
-        p.nickname = nickname;
-        p.univ     = univ;
-        p.major    = major;
-        p.token    = 0;
+        p.account    = account;
+        p.nickname   = nickname;
+        p.univ       = univ;
+        p.major      = major;
+        p.token      = 0;
         p.created_at = now();
     });
 
@@ -35,7 +35,7 @@ void buzzler::update(const account_name account,
                      const string&      nickname,
                      const string&      univ,
                      const string&      major,
-                     uint32_t     token)
+                     uint32_t           token)
 {
     require_auth(account);
 
@@ -80,9 +80,9 @@ void buzzler::getuser(const account_name account)
     eosio_assert(itr != users.end(), "Account does not has a user");
 
     // print user
-    print("Account: ", name{itr->account}, ", ");
+    print("Account: ",  name{itr->account},    ", ");
     print("Nickname: ", itr->nickname.c_str(), ", ");
-    print("Univ: ", itr->univ.c_str(), ", ");
-    print("Major: ", itr->major.c_str(), ", ");
-    print("Token: ", itr->token);
+    print("Univ: ",     itr->univ.c_str(),     ", ");
+    print("Major: ",    itr->major.c_str(),    ", ");
+    print("Token: ",    itr->token);
 }
