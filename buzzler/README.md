@@ -27,6 +27,9 @@ $ cleos push action tak getuser '["tak"]' -p tak
 # Get user by Token
 $ cleos push action tak bytoken '["1000000"]' -p tak
 
+# Range by token
+$ cleos push action tak rangetoken '[10, 10000]' -p tak
+
 # Check DB
 $ cleos get table tak tak users
 {
