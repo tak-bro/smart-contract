@@ -35,7 +35,7 @@ void buzzler::update(const account_name account,
                      const string&      nickname,
                      const string&      univ,
                      const string&      major,
-                     uint32_t           token)
+                     uint64_t           token)
 {
     require_auth(account);
 
@@ -85,4 +85,32 @@ void buzzler::getuser(const account_name account)
     print("Univ: ",     itr->univ.c_str(),     ", ");
     print("Major: ",    itr->major.c_str(),    ", ");
     print("Token: ",    itr->token);
+
+}
+
+//void buzzler::bynickname(const string& to_find_nickname)
+//{
+//    user_table users(_self, _self);
+//    auto nickname_index = users.get_index<N(nickname)>();
+//    auto itr = nickname_index.find(to_find_nickname);
+//
+//    for (; itr != nickname_index.end() && itr->nickname == to_find_nickname; ++itr) {
+//        print(name{itr->account}, "'s nickname is ", itr->nickname.c_str());
+//    }
+//}
+
+void buzzler::bytoken(uint64_t to_find_token)
+{
+   user_table users(_self, _self);
+    auto token_index = users.get_index<N(token)>();
+    auto itr = token_index.find(to_find_token);
+
+    for (; itr != token_index.end() && itr->token == to_find_token; ++itr) {
+        // print user
+        print("Account: ",  name{itr->account},    ", ");
+        print("Nickname: ", itr->nickname.c_str(), ", ");
+        print("Univ: ",     itr->univ.c_str(),     ", ");
+        print("Major: ",    itr->major.c_str(),    ", ");
+        print("Token: ",    itr->token,            "\n");
+    }
 }

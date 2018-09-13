@@ -24,6 +24,9 @@ $ cleos push action tak remove '["tak"]' -p tak
 # Get user(print)
 $ cleos push action tak getuser '["tak"]' -p tak
 
+# Get user by Token
+$ cleos push action tak bytoken '["1000000"]' -p tak
+
 # Check DB
 $ cleos get table tak tak users
 {

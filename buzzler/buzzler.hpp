@@ -24,13 +24,16 @@ class buzzler: public eosio::contract {
                     const string&      nickname,
                     const string&      univ,
                     const string&      major,
-                    uint32_t           token);
+                    uint64_t           token);
 
         // @abi action
         void remove(const account_name account);
 
         // @abi action
         void getuser(const account_name account);
+
+        // @abi action
+        void bytoken(uint64_t token);
 
     private:
 
@@ -40,14 +43,23 @@ class buzzler: public eosio::contract {
             string       nickname;
             string       univ;
             string       major;
-            uint32_t     token;
+            uint64_t     token;
             time         created_at;
 
             account_name primary_key() const { return account; }
+            uint64_t     by_token() const { return token; }
             EOSLIB_SERIALIZE(user, (account)(nickname)(univ)(major)(token)(created_at))
         };
 
-        typedef eosio::multi_index<N(users), user> user_table;
+//        typedef eosio::multi_index <
+//            N(users), user,
+//            indexed_by< N(token), const_mem_fun<user, string, &user::by_nickname> >
+//        > user_table;
+        typedef eosio::multi_index<
+            N(users), user,
+            indexed_by< N(token), const_mem_fun<user, uint64_t, &user::by_token> >
+            indexed_by< N(nickname), const_mem_fun<user, string, &user::by_nickname> >
+        > user_table;
 };
 
-EOSIO_ABI(buzzler, (hello)(create)(update)(remove)(getuser))
+EOSIO_ABI(buzzler, (hello)(create)(update)(remove)(getuser)(bytoken))
