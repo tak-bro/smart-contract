@@ -35,6 +35,9 @@ class buzzler: public eosio::contract {
         // @abi action
         void bytoken(uint64_t token);
 
+        // @abi action
+        void rangetoken(uint64_t less, uint64_t over);
+
     private:
 
         // @abi table users
@@ -51,15 +54,10 @@ class buzzler: public eosio::contract {
             EOSLIB_SERIALIZE(user, (account)(nickname)(univ)(major)(token)(created_at))
         };
 
-//        typedef eosio::multi_index <
-//            N(users), user,
-//            indexed_by< N(token), const_mem_fun<user, string, &user::by_nickname> >
-//        > user_table;
         typedef eosio::multi_index<
             N(users), user,
             indexed_by< N(token), const_mem_fun<user, uint64_t, &user::by_token> >
-            indexed_by< N(nickname), const_mem_fun<user, string, &user::by_nickname> >
         > user_table;
 };
 
-EOSIO_ABI(buzzler, (hello)(create)(update)(remove)(getuser)(bytoken))
+EOSIO_ABI(buzzler, (hello)(create)(update)(remove)(getuser)(bytoken)(rangetoken))

@@ -88,20 +88,9 @@ void buzzler::getuser(const account_name account)
 
 }
 
-//void buzzler::bynickname(const string& to_find_nickname)
-//{
-//    user_table users(_self, _self);
-//    auto nickname_index = users.get_index<N(nickname)>();
-//    auto itr = nickname_index.find(to_find_nickname);
-//
-//    for (; itr != nickname_index.end() && itr->nickname == to_find_nickname; ++itr) {
-//        print(name{itr->account}, "'s nickname is ", itr->nickname.c_str());
-//    }
-//}
-
 void buzzler::bytoken(uint64_t to_find_token)
 {
-   user_table users(_self, _self);
+    user_table users(_self, _self);
     auto token_index = users.get_index<N(token)>();
     auto itr = token_index.find(to_find_token);
 
@@ -113,4 +102,17 @@ void buzzler::bytoken(uint64_t to_find_token)
         print("Major: ",    itr->major.c_str(),    ", ");
         print("Token: ",    itr->token,            "\n");
     }
+}
+
+void buzzler::rangetoken(uint64_t less, uint64_t over)
+{
+    user_table users(_self, _self);
+    auto token_index = users.get_index<N(token)>();
+
+    auto begin = token_index.lower_bound(less);
+    auto end   = token_index.lower_bound(over);
+
+    for_each(begin, end, [&](auto &p) {
+        print(name{p.account}, "'s token: ", p.token, "\n");
+    });
 }
