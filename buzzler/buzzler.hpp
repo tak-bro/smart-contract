@@ -11,8 +11,11 @@ class buzzler_service: public eosio::contract {
                                             user_table(self, self) {}
 
         // @abi action
-        void createuser(const account_name server,
-                        const account_name account);
+        void createuser(const account_name account);
+
+        // @abi action
+        void updatetoken(const account_name account,
+                         const uint64_t     token);
 
     private:
 
@@ -30,4 +33,4 @@ class buzzler_service: public eosio::contract {
         multi_index<N(users), user> user_table;
  };
 
-EOSIO_ABI(buzzler_service, (createuser))
+EOSIO_ABI(buzzler_service, (createuser)(updatetoken))
