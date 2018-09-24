@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "map": "cpp",
+        "set": "cpp",
+        "vector": "cpp",
+        "__functional_03": "cpp",
+        "functional": "cpp"
+    }
+}

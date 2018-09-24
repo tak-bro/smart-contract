@@ -16,6 +16,12 @@ $ ./build.sh todoservice todo
 # Create new todo item
 $ cleos push action todoservice create '["todoservice", 1, "todo1"]' -p todoservice
 
+# Complete todo item
+$ cleos push action todoservice complete '["todoservice", 1]' -p todoservice
+
+# Delete todo item
+$ cleos push action todoservice destroy '["todoservice", 1]' -p todoservice
+
 # Check DB
 $ cleos get table todoservice todoservice todos
 {

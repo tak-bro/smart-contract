@@ -61,3 +61,25 @@ class buzzler: public eosio::contract {
 };
 
 EOSIO_ABI(buzzler, (hello)(create)(update)(remove)(getuser)(bytoken)(rangetoken))
+
+
+///////
+
+// account table
+// - eosaccount_name
+// - buzztoken
+// - created_at
+
+// - action
+//     - create account ->
+
+// post table
+// - post_hash
+// - amount(보상 토큰)
+// - 모두 require_auth -> server
+// - created_at
+
+// post_like
+// post_comment
+
+// inline
