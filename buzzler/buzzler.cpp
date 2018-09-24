@@ -1,5 +1,8 @@
 #include<buzzler.hpp>
 
+/*
+ *  user actions
+ */
 void buzzler_service::createuser(const account_name account)
 {
     // check buzzler server
@@ -7,7 +10,7 @@ void buzzler_service::createuser(const account_name account)
 
     // check account on user_table
     auto itr = user_table.find(account);
-    eosio_assert(itr == user_table.end(), "Account already has a user");
+    eosio_assert(itr == user_table.end(), "UserTable already has a user");
 
     // create user
     user_table.emplace(_self, [&](auto& p) {
@@ -28,7 +31,7 @@ void buzzler_service::updatetoken(const account_name account,
 
     // check account on user_table
     auto itr = user_table.find(account);
-    eosio_assert(itr != user_table.end(), "Account does not has a user");
+    eosio_assert(itr != user_table.end(), "UserTable does not has a user");
 
     // update user
     user_table.modify(itr, _self, [&](auto& p) {
@@ -37,4 +40,63 @@ void buzzler_service::updatetoken(const account_name account,
 
     // debug print
     print(name{account}, " modified");
+}
+
+/*
+ *  post actions
+ */
+void buzzler_service::writepost(const uint64_t     id,
+                                const account_name author,
+                                const string       &post_hash)
+{
+    // check buzzler server
+    require_auth(_self);
+
+     // check account on user_table
+    auto user_itr = user_table.find(author);
+    eosio_assert(user_itr != user_table.end(), "UserTable does not has a author");
+
+    // check id on post_table
+    auto post_itr = post_table.find(id);
+    eosio_assert(post_itr == post_table.end(), "PostTable already has same id");
+
+    // create post
+    post_table.emplace(_self, [&](auto& p) {
+        p.id          = id;
+        p.author      = author;
+        p.post_hash   = post_hash;
+        p.buzz_amount = 0;
+        p.created_at  = now();
+    });
+
+    // debug print
+    print(name{author}, "'s post created");
+}
+
+void buzzler_service::updatepost(const uint64_t     id,
+                                 const account_name author,
+                                 const string       &post_hash,
+                                 const uint32_t     buzz_amount,
+                                 const uint32_t     like_count)
+{
+    // check buzzler server
+    require_auth(_self);
+
+    // check account on user_table
+    auto itr = user_table.find(author);
+    eosio_assert(itr != user_table.end(), "UserTable does not has a author");
+
+    // check id on post_table
+    auto post_itr = post_table.find(id);
+    eosio_assert(post_itr != post_table.end(), "PostTable does not has id");
+
+    // update post
+    post_table.modify(post_itr, _self, [&](auto& p) {
+        p.post_hash   = post_hash;
+        p.buzz_amount = buzz_amount;
+        p.like_count  = like_count;
+    });
+
+    // debug print
+    print("post#", id, " updated");
 }

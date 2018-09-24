@@ -8,7 +8,13 @@ class buzzler_service: public eosio::contract {
 
     public: 
         buzzler_service(account_name self): contract::contract(self),
-                                            user_table(self, self) {}
+                                            user_table(self, self),
+                                            post_table(self, self) {}
+
+
+        /*
+         *  user actions
+         */
 
         // @abi action
         void createuser(const account_name account);
@@ -17,9 +23,24 @@ class buzzler_service: public eosio::contract {
         void updatetoken(const account_name account,
                          const uint64_t     token);
 
-    private:
+        /*
+         *  post actions
+         */
 
-        // @abi table users i64
+        // @abi action
+        void writepost(const uint64_t     id,
+                       const account_name author,
+                       const string&      post_hash);
+
+        void updatepost(const uint64_t     id,
+                        const account_name author,
+                        const string&      post_hash,
+                        const uint32_t     buzz_amount,
+                        const uint32_t     like_count);
+
+      private:
+
+        // @abi table users 
         struct user {
             account_name account;
             uint64_t     buzz_token;
@@ -30,7 +51,23 @@ class buzzler_service: public eosio::contract {
             EOSLIB_SERIALIZE(user, (account)(buzz_token)(created_at))
         };
 
+        // @abi table posts
+        struct post {
+            uint64_t     id;
+            account_name author;
+            string       post_hash;   // post 해쉬값(title, contents...)
+            uint32_t     buzz_amount; // 보상 토근
+            uint32_t     like_count; 
+            time         created_at;
+
+            auto primary_key() const { return id; }
+
+            EOSLIB_SERIALIZE(post, (id)(author)(post_hash)(buzz_amount)(like_count)(created_at))
+        };
+
+        // define tables
         multi_index<N(users), user> user_table;
+        multi_index<N(posts), post> post_table;
  };
 
-EOSIO_ABI(buzzler_service, (createuser)(updatetoken))
+EOSIO_ABI(buzzler_service, (createuser)(updatetoken)(writepost)(updatepost))
