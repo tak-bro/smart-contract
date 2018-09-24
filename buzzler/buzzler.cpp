@@ -101,7 +101,23 @@ void buzzler_service::updatepost(const uint64_t     id,
     print("post#", id, " updated");
 }
 
-void buzzler_service::printbyid(const uint64_t id)
+void buzzler_service::deletepost(const uint64_t id)
+{
+    // check buzzler server
+    require_auth(_self);
+
+    // check id on post_table
+    auto itr = post_table.find(id);
+    eosio_assert(itr != post_table.end(), "PostTable does not has id");
+
+    // delete post
+    post_table.erase(itr);
+
+    print("post#", id, " deleted");
+}
+
+
+void buzzler_service::postbyid(const uint64_t id)
 {
     // check buzzler server
     require_auth(_self);
@@ -119,7 +135,7 @@ void buzzler_service::printbyid(const uint64_t id)
     print("created_at: ",  itr->created_at);
 }
 
-void buzzler_service::printbyuser(const account_name author)
+void buzzler_service::postsbyuser(const account_name author)
 {
     // check buzzler server
     require_auth(_self);

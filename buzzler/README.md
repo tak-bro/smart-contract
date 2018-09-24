@@ -31,11 +31,14 @@ $ cleos push action buzzserver writepost '[5, "curl", "curl555555"]' -p buzzserv
 $ cleos push action buzzserver updatepost '[1, "tak", "post hash value", 100, 1]' -p buzzserver
 $ cleos push action buzzserver updatepost '[2, "curl", "post hash value222222", 10000, 1000]' -p buzzserver
 
+# Delete post by id
+$ cleos push action buzzserver deletepost '[2]' -p buzzserver
+
 # Print Post by id
-$ cleos push action buzzserver printbyid '[3]' -p buzzserver
+$ cleos push action buzzserver postbyid '[3]' -p buzzserver
 
 # Print Post by author
-$ cleos push action buzzserver printbyuser '["tak"]' -p buzzserver
+$ cleos push action buzzserver postsbyuser '["tak"]' -p buzzserver
 
 # Check DB
 $ cleos get table buzzserver buzzserver users

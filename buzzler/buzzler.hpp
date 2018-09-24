@@ -39,10 +39,13 @@ class buzzler_service: public eosio::contract {
                         const uint32_t     like_count);
 
         // @abi action
-        void printbyid(const uint64_t id);
+        void deletepost(const uint64_t id);
 
         // @abi action
-        void printbyuser(const account_name author);
+        void postbyid(const uint64_t id);
+
+        // @abi action
+        void postsbyuser(const account_name author);
 
       private:
 
@@ -79,4 +82,4 @@ class buzzler_service: public eosio::contract {
         > post_table;
  };
 
-EOSIO_ABI(buzzler_service, (createuser)(updatetoken)(writepost)(updatepost)(printbyid)(printbyuser))
+EOSIO_ABI(buzzler_service, (createuser)(updatetoken)(writepost)(updatepost)(deletepost)(postbyid)(postsbyuser))
