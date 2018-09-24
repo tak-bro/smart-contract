@@ -11,7 +11,6 @@ class buzzler_service: public eosio::contract {
                                             user_table(self, self),
                                             post_table(self, self) {}
 
-
         /*
          *  user actions
          */
@@ -32,11 +31,15 @@ class buzzler_service: public eosio::contract {
                        const account_name author,
                        const string&      post_hash);
 
+        // @abi action
         void updatepost(const uint64_t     id,
                         const account_name author,
                         const string&      post_hash,
                         const uint32_t     buzz_amount,
                         const uint32_t     like_count);
+
+        // @abi action
+        void printbyid(const uint64_t id);
 
       private:
 
@@ -70,4 +73,4 @@ class buzzler_service: public eosio::contract {
         multi_index<N(posts), post> post_table;
  };
 
-EOSIO_ABI(buzzler_service, (createuser)(updatetoken)(writepost)(updatepost))
+EOSIO_ABI(buzzler_service, (createuser)(updatetoken)(writepost)(updatepost)(printbyid))

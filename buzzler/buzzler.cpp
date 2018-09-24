@@ -35,7 +35,7 @@ void buzzler_service::updatetoken(const account_name account,
 
     // update user
     user_table.modify(itr, _self, [&](auto& p) {
-        p.buzz_token    = token;
+        p.buzz_token = token;
     });
 
     // debug print
@@ -70,7 +70,7 @@ void buzzler_service::writepost(const uint64_t     id,
     });
 
     // debug print
-    print(name{author}, "'s post created");
+    print("post#", id, " created");
 }
 
 void buzzler_service::updatepost(const uint64_t     id,
@@ -99,4 +99,22 @@ void buzzler_service::updatepost(const uint64_t     id,
 
     // debug print
     print("post#", id, " updated");
+}
+
+void buzzler_service::printbyid(const uint64_t id)
+{
+    // check buzzler server
+    require_auth(_self);
+
+    // check id on post_table
+    auto itr = post_table.find(id);
+    eosio_assert(itr != post_table.end(), "PostTable does not has id");
+
+    // print post by id
+    print("id: ",          itr->id, ", ");
+    print("author: ",      name{itr->author}, ", ");
+    print("post_hash: ",   itr->post_hash.c_str(), ", ");
+    print("buzz_amount: ", itr->buzz_amount, ", ");
+    print("like_count: ",  itr->like_count, ", ");
+    print("created_at: ",  itr->created_at);
 }
