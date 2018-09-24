@@ -41,6 +41,9 @@ class buzzler_service: public eosio::contract {
         // @abi action
         void printbyid(const uint64_t id);
 
+        // @abi action
+        void printbyuser(const account_name author);
+
       private:
 
         // @abi table users 
@@ -63,14 +66,17 @@ class buzzler_service: public eosio::contract {
             uint32_t     like_count; 
             time         created_at;
 
-            auto primary_key() const { return id; }
+            auto     primary_key() const { return id; }
+            uint64_t by_author()   const { return author; }
 
             EOSLIB_SERIALIZE(post, (id)(author)(post_hash)(buzz_amount)(like_count)(created_at))
         };
 
         // define tables
         multi_index<N(users), user> user_table;
-        multi_index<N(posts), post> post_table;
+        multi_index<N(posts), post,
+                    indexed_by<N(author), const_mem_fun<post, uint64_t, &post::by_author>>
+        > post_table;
  };
 
-EOSIO_ABI(buzzler_service, (createuser)(updatetoken)(writepost)(updatepost)(printbyid))
+EOSIO_ABI(buzzler_service, (createuser)(updatetoken)(writepost)(updatepost)(printbyid)(printbyuser))

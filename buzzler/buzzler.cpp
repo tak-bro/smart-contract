@@ -118,3 +118,23 @@ void buzzler_service::printbyid(const uint64_t id)
     print("like_count: ",  itr->like_count, ", ");
     print("created_at: ",  itr->created_at);
 }
+
+void buzzler_service::printbyuser(const account_name author)
+{
+    // check buzzler server
+    require_auth(_self);
+
+    // get post index by author
+    auto author_index = post_table.get_index<N(author)>();
+    auto post_itr = author_index.find(author);
+
+    // print post by author
+    for (; post_itr != author_index.end() && post_itr->author == author; ++post_itr){
+        print("id: ", post_itr->id, ", ");
+        print("author: ", name{post_itr->author}, ", ");
+        print("post_hash: ", post_itr->post_hash.c_str(), ", ");
+        print("buzz_amount: ", post_itr->buzz_amount, ", ");
+        print("like_count: ", post_itr->like_count, ", ");
+        print("created_at: ", post_itr->created_at, "\n");
+    }
+}

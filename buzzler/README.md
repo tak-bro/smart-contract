@@ -29,6 +29,13 @@ $ cleos push action buzzserver writepost '[5, "curl", "curl555555"]' -p buzzserv
 
 # Update post with buzz_amount by post id
 $ cleos push action buzzserver updatepost '[1, "tak", "post hash value", 100, 1]' -p buzzserver
+$ cleos push action buzzserver updatepost '[2, "curl", "post hash value222222", 10000, 1000]' -p buzzserver
+
+# Print Post by id
+$ cleos push action buzzserver printbyid '[3]' -p buzzserver
+
+# Print Post by author
+$ cleos push action buzzserver printbyuser '["tak"]' -p buzzserver
 
 # Check DB
 $ cleos get table buzzserver buzzserver users
@@ -61,3 +68,5 @@ $ cleos get table buzzserver buzzserver posts
   "more": false
 }
 ```
+
+> **기존 테이블에 데이터가 있는 상태에서 multi_index를 새로 추가하게되면 이전 데이터는 인덱싱이 되지 않음**
