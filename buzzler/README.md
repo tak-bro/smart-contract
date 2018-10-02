@@ -40,6 +40,27 @@ $ cleos push action buzzserver postbyid '[3]' -p buzzserver
 # Print Post by author
 $ cleos push action buzzserver postsbyuser '["tak"]' -p buzzserver
 
+# Write comment with hash
+$ cleos push action buzzserver writecmt '[1, 1, "tak", "comment"]' -p buzzserver
+$ cleos push action buzzserver writecmt '[2, 1, "curl", "cmeent"]' -p buzzserver
+
+# Write Recomment
+$ cleos push action buzzserver writerecmt '[1, 1, "tak", "comment"]' -p buzzserver
+$ cleos push action buzzserver writerecmt '[2, 1, "curl", "cmeent"]' -p buzzserver
+
+# Update post with buzz_amount by post id
+$ cleos push action buzzserver updatepost '[1, "tak", "post hash value", 100, 1]' -p buzzserver
+$ cleos push action buzzserver updatepost '[2, "curl", "post hash value222222", 10000, 1000]' -p buzzserver
+
+# Delete post by id
+$ cleos push action buzzserver deletepost '[2]' -p buzzserver
+
+# Print Post by id
+$ cleos push action buzzserver postbyid '[3]' -p buzzserver
+
+# Print Post by author
+$ cleos push action buzzserver postsbyuser '["tak"]' -p buzzserver
+
 # Check DB
 $ cleos get table buzzserver buzzserver users
 {

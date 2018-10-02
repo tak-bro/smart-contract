@@ -48,6 +48,39 @@ class buzzler_service: public eosio::contract {
         // @abi action
         void postsbyuser(const account_name author);
 
+        /*
+         *  comment actions
+         */
+
+        // @abi action
+        void writecmt(const uint64_t     id,
+                          const uint64_t     post_id,
+                          const account_name author,
+                          const string&      comment_hash);
+
+        // @abi action
+        void writerecmt(const uint64_t     id,
+                            const uint64_t     parent_id,
+                            const uint64_t     post_id,
+                            const account_name author,
+                            const string&      comment_hash);
+
+        // @abi action
+        void updatecmt(const uint64_t     id,
+                           const account_name author,
+                           const string&      comment_hash,
+                           const uint32_t     buzz_amount,
+                           const uint32_t     like_count);
+
+        // @abi action
+        void deletecmt(const uint64_t id);
+
+        // @abi action
+        void cmtbyid(const uint64_t id);
+
+        // @abi action
+        void cmtsbypost(const uint64_t post_id);
+
       private:
 
         // @abi table users 
@@ -88,7 +121,6 @@ class buzzler_service: public eosio::contract {
             time         created_at;
 
             auto     primary_key()  const { return id; }
-            uint64_t by_parent_id() const { return parent_id; }
             uint64_t by_post_id()   const { return post_id; }
 
             EOSLIB_SERIALIZE(comment, (id)(parent_id)(post_id)(author)(comment_hash)(buzz_amount)(like_count)(created_at))
@@ -100,9 +132,8 @@ class buzzler_service: public eosio::contract {
                     indexed_by<N(author), const_mem_fun<post, uint64_t, &post::by_author>>
         > post_table;
         multi_index<N(comments), comment,
-                    indexed_by<N(parentid), const_mem_fun<comment, uint64_t, &comment::by_parent_id>>,
                     indexed_by<N(postid), const_mem_fun<comment, uint64_t, &comment::by_post_id>>
         > comment_table;
  };
 
-EOSIO_ABI(buzzler_service, (createuser)(updatetoken)(writepost)(updatepost)(deletepost)(postbyid)(postsbyuser))
+EOSIO_ABI(buzzler_service, (createuser)(updatetoken)(writepost)(updatepost)(deletepost)(postbyid)(postsbyuser)(writecmt)(writerecmt)(updatecmt)(deletecmt)(cmtbyid)(cmtsbypost))
