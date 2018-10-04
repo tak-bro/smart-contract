@@ -21,7 +21,7 @@ $ cleos push action buzzserver createuser '["curl"]' -p buzzserver
 $ cleos push action buzzserver updatetoken '["tak", 1000]' -p buzzserver
 
 # Write post with hash
-$ cleos push action buzzserver writepost '[1, "tak", "post hash value"]' -p buzzserver
+$ cleos push action buzzserver writepost '[2, "tak", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"]' -p buzzserver
 $ cleos push action buzzserver writepost '[2, "tak", "post2222"]' -p buzzserver
 $ cleos push action buzzserver writepost '[3, "curl", "curlpost333333"]' -p buzzserver
 $ cleos push action buzzserver writepost '[4, "tak", "takpost44444"]' -p buzzserver
@@ -44,22 +44,19 @@ $ cleos push action buzzserver postsbyuser '["tak"]' -p buzzserver
 $ cleos push action buzzserver writecmt '[1, 1, "tak", "comment"]' -p buzzserver
 $ cleos push action buzzserver writecmt '[2, 1, "curl", "cmeent"]' -p buzzserver
 
-# Write Recomment
-$ cleos push action buzzserver writerecmt '[1, 1, "tak", "comment"]' -p buzzserver
-$ cleos push action buzzserver writerecmt '[2, 1, "curl", "cmeent"]' -p buzzserver
+# Update comment
+# id, author, comment_hash, buzz_amount, like_count
+$ cleos push action buzzserver updatecmt '[1, "tak", "update comment", 100, 1]' -p buzzserver
+$ cleos push action buzzserver updatecmt '[2, "curl", "uopdate comment value222222", 10000, 1000]' -p buzzserver
 
-# Update post with buzz_amount by post id
-$ cleos push action buzzserver updatepost '[1, "tak", "post hash value", 100, 1]' -p buzzserver
-$ cleos push action buzzserver updatepost '[2, "curl", "post hash value222222", 10000, 1000]' -p buzzserver
+# Delete comment by id
+$ cleos push action buzzserver deletecmt '[2]' -p buzzserver
 
-# Delete post by id
-$ cleos push action buzzserver deletepost '[2]' -p buzzserver
+# Print comment by id
+$ cleos push action buzzserver cmtbyid '[2]' -p buzzserver
 
-# Print Post by id
-$ cleos push action buzzserver postbyid '[3]' -p buzzserver
-
-# Print Post by author
-$ cleos push action buzzserver postsbyuser '["tak"]' -p buzzserver
+# Print comments by postid
+$ cleos push action buzzserver comtsbypost '[1]' -p buzzserver
 
 # Check DB
 $ cleos get table buzzserver buzzserver users

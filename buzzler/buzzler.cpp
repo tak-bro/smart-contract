@@ -160,9 +160,9 @@ void buzzler_service::postsbyuser(const account_name author)
  *  comment actions
  */
 void buzzler_service::writecmt(const uint64_t     id,
-                                   const uint64_t     post_id,
-                                   const account_name author,
-                                   const string       &comment_hash)
+                               const uint64_t     post_id,
+                               const account_name author,
+                               const string       &comment_hash)
 {
     // check buzzler server
     require_auth(_self);
@@ -183,7 +183,7 @@ void buzzler_service::writecmt(const uint64_t     id,
         p.comment_hash   = comment_hash;
         p.buzz_amount = 0;
         p.created_at  = now();
-        p.parent_id   = -1; // parent comment가 없을 경우 -1 설정
+        p.parent_id   = 0; // parent comment가 없을 경우 0 설정
     });
 
     // debug print
@@ -191,10 +191,10 @@ void buzzler_service::writecmt(const uint64_t     id,
 }
 
 void buzzler_service::writerecmt(const uint64_t     id,
-                                     const uint64_t     parent_id,
-                                     const uint64_t     post_id,
-                                     const account_name author,
-                                     const string       &comment_hash)
+                                 const uint64_t     parent_id,
+                                 const uint64_t     post_id,
+                                 const account_name author,
+                                 const string       &comment_hash)
 {
     // check buzzler server
     require_auth(_self);
@@ -289,7 +289,7 @@ void buzzler_service::cmtbyid(const uint64_t id)
     print("created_at: ",   itr->created_at);
 }
 
-void buzzler_service::cmtsbypost(const uint64_t post_id)
+void buzzler_service::cmtsbypostid(const uint64_t post_id)
 {
     // check buzzler server
     require_auth(_self);
