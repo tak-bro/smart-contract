@@ -1,7 +1,5 @@
 // ref: https://github.com/bada-studio/knights_contract/commit/3b1538ffcb634f55628af707881be0aac208e32c#diff-a983596d60324fe0f3af651d5b610442
-#include <eosiolib/eosio.hpp> 
 #include <eosiolib/transaction.hpp>
-#include <string>
 
 #pragma once	
  // Linear Congruential Generator	
@@ -20,6 +18,7 @@ private:
         }	
         return instance;	
     }	
+
      uint32_t range(uint32_t to) {	
         seed = (a * seed + c) % 0x7fffffff;	
         return (uint32_t)(seed % to);	
