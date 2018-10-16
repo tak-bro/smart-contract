@@ -25,6 +25,9 @@ $ cleos push action styleserver addpost '["tak", "HASH_VALUE HASH_VALUE HASH_VAL
 $ cleos push action styleserver addpost '["tak", "HASH_222222222222222"]' -p styleserver
 $ cleos push action styleserver addpost '["curl", "CURL_CURL_HASH"]' -p styleserver
 
+# Update post
+$ cleos push action styleserver updatepost '["tak", "1", "TAK_UPDATED"]' -p styleserver
+
 # Check DB
 $ cleos get table styleserver styleserver users
 {

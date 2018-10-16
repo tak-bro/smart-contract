@@ -31,11 +31,15 @@ class style_service: public eosio::contract {
         // @abi action 
         void addpost(const account_name author, const string hash_value);
 
+        // @abi action 
+        void updatepost(const account_name author, const uint32_t id, const string hash_value);
+
         /// ETC
         // @abi action
         void getrandom(account_name author);
 
     private:
+
         // @abi table users 
         struct user {
             account_name account;
@@ -60,6 +64,7 @@ class style_service: public eosio::contract {
         // define tables
         multi_index<N(users), user> user_table;
         multi_index<N(posts), post> post_table;
+
  };
 
-EOSIO_ABI(style_service, (createuser)(addpost)(getrandom))
+EOSIO_ABI(style_service, (createuser)(addpost)(updatepost)(getrandom))

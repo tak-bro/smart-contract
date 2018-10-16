@@ -40,7 +40,38 @@ void style_service::addpost(const account_name user, const string hash_value)
             post.post_rows.push_back(row);
         });
     }
-    print("#post added");
+
+    print(name{user}, "'s post added #", row.id);
+}
+
+void style_service::updatepost(const account_name author, const uint32_t id, const string to_update)
+{
+    // check style server
+    require_auth(_self);
+
+    // check account on user_table
+    auto user_itr = user_table.find(author);
+    eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
+
+    // check post on post_table
+    auto post_itr = post_table.find(author);
+    eosio_assert(post_itr != post_table.end(), "PostTable does not has a author");
+
+    // update post row
+    bool isFound = false;
+    post_table.modify(post_itr, _self, [&](auto &item) {
+        for (int i = 0; i < item.post_rows.size(); i++) {
+            if (item.post_rows[i].id == id) {
+                item.post_rows[i].post_hash = to_update;
+                isFound = true;
+                break;
+            }
+        }
+    });
+
+    // debug print
+    eosio_assert(isFound, "Could not found post");
+    print(name{author}, "'s post updated #", id);
 }
 
 void style_service::createuser(const account_name account)
