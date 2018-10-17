@@ -23,14 +23,14 @@ void puton_service::createuser(const account_name account)
 /// POST ACTIONS
 void puton_service::addpost(const account_name user, const string hash_value)
 {
-    // check puton server
-    require_auth(_self);
+    // check user permission
+    require_auth(user);
 
     // check account on user_table
     auto user_itr = user_table.find(user);
     eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
 
-    // get post_id from user_table
+    // get unique post_id from post_table
     uint64_t post_id = post_table.available_primary_key();
 
     // create post to post_table
@@ -54,35 +54,42 @@ void puton_service::addpost(const account_name user, const string hash_value)
     print("post#", post_id, " created");
 }
 
-// void puton_service::updatepost(const account_name author, const uint32_t id, const string to_update)
-// {
-//     // check puton server
-//     require_auth(_self);
+void puton_service::updatepost(const account_name author, const uint32_t id, const string to_update)
+{
+    // check user permission
+    require_auth(author);
 
-//     // check account on user_table
-//     auto user_itr = user_table.find(author);
-//     eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
+    // check account on user_table
+    auto user_itr = user_table.find(author);
+    eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
 
-//     // check post on post_table
-//     auto post_itr = post_table.find(author);
-//     eosio_assert(post_itr != post_table.end(), "PostTable does not has a author");
+    // check post on post_table
+    auto post_itr = post_table.find(id);
+    eosio_assert(post_itr != post_table.end(), "PostTable does not has id");
 
-//     // update post row
-//     bool isFound = false;
-//     post_table.modify(post_itr, _self, [&](auto &item) {
-//         for (int i = 0; i < item.post_rows.size(); i++) {
-//             if (item.post_rows[i].id == id) {
-//                 item.post_rows[i].post_hash = to_update;
-//                 isFound = true;
-//                 break;
-//             }
-//         }
-//     });
+    // update post_table
+    post_table.modify(post_itr, _self, [&](auto &post) {
+        post.post_hash = to_update;
+    });
 
-//     // debug print
-//     eosio_assert(isFound, "Could not found post");
-//     print(name{author}, "'s post updated #", id);
-// }
+    // debug print
+    print("post#", id, " updated");
+}
+
+void puton_service::deletepost(const account_name author, const uint64_t id)
+{
+    // check user permission
+    require_auth(author);
+
+    // check id on post_table
+    auto itr = post_table.find(id);
+    eosio_assert(itr != post_table.end(), "PostTable does not has id");
+
+    // delete post
+    post_table.erase(itr);
+
+    print("post#", id, " deleted");
+}
 
 
 /// ETC

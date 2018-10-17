@@ -34,12 +34,15 @@ class puton_service: public eosio::contract {
         // @abi action 
         void addpost(const account_name author, const string hash_value);
 
-        // // @abi action 
-        // void updatepost(const account_name author, const uint32_t id, const string hash_value);
+        // @abi action 
+        void updatepost(const account_name author, const uint32_t id, const string to_update);
+
+         // @abi action
+        void deletepost(const account_name author, const uint64_t id);
 
         /// ETC
         // @abi action
-        void printrandom(account_name author);
+        void printrandom(account_name author); // for test
 
     private:
 
@@ -79,4 +82,4 @@ class puton_service: public eosio::contract {
         postrow empty_commentrow;
  };
 
-EOSIO_ABI(puton_service, (createuser)(addpost)(printrandom))
+EOSIO_ABI(puton_service, (createuser)(addpost)(updatepost)(deletepost)(printrandom))

@@ -25,22 +25,33 @@ $ cleos push action puton createuser '["curl"]' -p puton
 $ cleos push action puton getrandom '["tak"]' -p puton
 
 # Add post
-$ cleos push action puton addpost '["tak", "TEST1111"]' -p puton
-$ cleos push action puton addpost '["tak", "TEST22222"]' -p puton
-$ cleos push action puton addpost '["curl", "CURL_CURL_HASH"]' -p puton
+$ cleos push action puton addpost '["tak", "TEST1111"]' -p tak
+$ cleos push action puton addpost '["tak", "TEST22222"]' -p tak
+$ cleos push action puton addpost '["curl", "CURL_CURL_HASH"]' -p curl
 
 # Update post
-$ cleos push action puton updatepost '["tak", "1", "TAK_UPDATED"]' -p puton
+$ cleos push action puton updatepost '["tak", "1", "TAK_UPDATED"]' -p tak
+
+# Delete post
+$ cleos push action puton deletepost '["tak", "1"]' -p tak
 
 # Check DB
 $ cleos get table puton puton users
 {
   "rows": [{
       "account": "curl",
-      "created_at": 1539666255
+      "written_rows": [{
+          "post_id": 2
+        }
+      ]
     },{
       "account": "tak",
-      "created_at": 1539666133
+      "written_rows": [{
+          "post_id": 0
+        },{
+          "post_id": 1
+        }
+      ]
     }
   ],
   "more": false
@@ -49,27 +60,26 @@ $ cleos get table puton puton users
 $ cleos get table puton puton posts
 {
   "rows": [{
-      "author": "curl",
-      "last_id": 1,
-      "post_rows": [{
-          "id": 1,
-          "post_hash": "CURL_CURL_HASH",
-          "created_at": 1539666258
-        }
-      ]
-    },{
+      "id": 0,
       "author": "tak",
-      "last_id": 2,
-      "post_rows": [{
-          "id": 1,
-          "post_hash": "HASH_VALUE HASH_VALUE HASH_VALUE HASH_VALUE HASH_VALUE HASH_VALUE",
-          "created_at": 1539666181
-        },{
-          "id": 2,
-          "post_hash": "HASH_222222222222222",
-          "created_at": 1539666458
-        }
-      ]
+      "post_hash": "TEST1111",
+      "like_cnt": 0,
+      "comment_rows": [],
+      "created_at": 1539749968
+    },{
+      "id": 1,
+      "author": "tak",
+      "post_hash": "TEST22222",
+      "like_cnt": 0,
+      "comment_rows": [],
+      "created_at": 1539749972
+    },{
+      "id": 2,
+      "author": "curl",
+      "post_hash": "CURL_CURL_HASH",
+      "like_cnt": 0,
+      "comment_rows": [],
+      "created_at": 1539749976
     }
   ],
   "more": false
