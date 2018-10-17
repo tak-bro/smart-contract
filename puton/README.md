@@ -25,8 +25,8 @@ $ cleos push action puton createuser '["curl"]' -p puton
 $ cleos push action puton getrandom '["tak"]' -p puton
 
 # Add post
-$ cleos push action puton addpost '["tak", "HASH_VALUE HASH_VALUE HASH_VALUE HASH_VALUE HASH_VALUE HASH_VALUE"]' -p puton
-$ cleos push action puton addpost '["tak", "HASH_222222222222222"]' -p puton
+$ cleos push action puton addpost '["tak", "TEST1111"]' -p puton
+$ cleos push action puton addpost '["tak", "TEST22222"]' -p puton
 $ cleos push action puton addpost '["curl", "CURL_CURL_HASH"]' -p puton
 
 # Update post

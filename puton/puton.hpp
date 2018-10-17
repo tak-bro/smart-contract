@@ -11,9 +11,12 @@ random_gen random_gen::instance;
 
 // struct post for user_table
 struct postrow {
-    uint32_t id = 0;
-    string post_hash = "";
-    time created_at = 0;
+    uint64_t post_id = 0;
+};
+
+// struct comment for post_table
+struct commentrow {
+    uint64_t comment_id = 0;
 };
 
 class puton_service: public eosio::contract {
@@ -31,40 +34,49 @@ class puton_service: public eosio::contract {
         // @abi action 
         void addpost(const account_name author, const string hash_value);
 
-        // @abi action 
-        void updatepost(const account_name author, const uint32_t id, const string hash_value);
+        // // @abi action 
+        // void updatepost(const account_name author, const uint32_t id, const string hash_value);
 
         /// ETC
         // @abi action
-        void getrandom(account_name author);
+        void printrandom(account_name author);
 
     private:
 
         // @abi table users 
         struct user {
             account_name account;
-            time created_at;
+            std::vector<postrow> written_rows;
 
             auto primary_key() const { return account; }
 
-            EOSLIB_SERIALIZE(user, (account)(created_at))
+            EOSLIB_SERIALIZE(user, (account)(written_rows))
         };
 
         // @abi table posts
         struct post {
+            uint64_t id;
             account_name author;
-            uint32_t last_id;
-            std::vector<postrow> post_rows;
+            string post_hash;
+            uint8_t like_cnt;
+            std::vector<commentrow> comment_rows;
+            time created_at;
 
-            auto primary_key() const { return author; }
+            auto primary_key() const { return id; }
 
-            EOSLIB_SERIALIZE(post, (author)(last_id)(post_rows))
+            EOSLIB_SERIALIZE(post, (id)(author)(post_hash)(like_cnt)(comment_rows)(created_at))
         };
 
         // define tables
         multi_index<N(users), user> user_table;
         multi_index<N(posts), post> post_table;
 
+        // private variable
+        std::vector<postrow> empty_postrows;
+        postrow empty_postrow;
+
+        std::vector<commentrow> empty_commentrows;
+        postrow empty_commentrow;
  };
 
-EOSIO_ABI(puton_service, (createuser)(addpost)(updatepost)(getrandom))
+EOSIO_ABI(puton_service, (createuser)(addpost)(printrandom))
