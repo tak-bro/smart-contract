@@ -40,6 +40,9 @@ class puton_service: public eosio::contract {
          // @abi action
         void deletepost(const account_name author, const uint64_t id);
 
+        // @abi action
+        void addimages(const account_name author, const string hash_value, std::vector<std::string> args);
+
         /// ETC
         // @abi action
         void printrandom(account_name author); // for test
@@ -60,14 +63,15 @@ class puton_service: public eosio::contract {
         struct post {
             uint64_t id;
             account_name author;
-            string post_hash;
-            uint8_t like_cnt;
+            std::string post_hash;
+            std::vector<std::string> image_urls;
             std::vector<commentrow> comment_rows;
+            uint8_t like_cnt;
             time created_at;
 
             auto primary_key() const { return id; }
 
-            EOSLIB_SERIALIZE(post, (id)(author)(post_hash)(like_cnt)(comment_rows)(created_at))
+            EOSLIB_SERIALIZE(post, (id)(author)(post_hash)(image_urls)(comment_rows)(like_cnt)(created_at))
         };
 
         // define tables
@@ -76,10 +80,8 @@ class puton_service: public eosio::contract {
 
         // private variable
         std::vector<postrow> empty_postrows;
-        postrow empty_postrow;
-
         std::vector<commentrow> empty_commentrows;
-        postrow empty_commentrow;
+        std::vector<string> empty_imagerows;
  };
 
-EOSIO_ABI(puton_service, (createuser)(addpost)(updatepost)(deletepost)(printrandom))
+EOSIO_ABI(puton_service, (createuser)(addpost)(addimages)(updatepost)(deletepost)(printrandom))

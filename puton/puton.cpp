@@ -39,6 +39,7 @@ void puton_service::addpost(const account_name user, const string hash_value)
         p.author = user;
         p.post_hash = hash_value;
         p.created_at = now();
+        p.image_urls = empty_imagerows;
         p.comment_rows = empty_commentrows;
         p.like_cnt = 0;
     });
@@ -52,6 +53,35 @@ void puton_service::addpost(const account_name user, const string hash_value)
 
     // debug print
     print("post#", post_id, " created");
+}
+
+void puton_service::addimages(const account_name user, const string hash_value, std::vector<std::string> args)
+{
+    // check user permission
+    require_auth(user);
+
+    // get unique post_id from post_table
+    uint64_t post_id = post_table.available_primary_key();
+
+    // push temp vector
+    std::vector<std::string> image_urls;
+    for (auto &arg : args) {
+        image_urls.push_back(arg);
+    }
+
+    // create post to post_table
+    post_table.emplace(_self, [&](auto& p) {
+        p.id = post_id;
+        p.author = user;
+        p.post_hash = hash_value;
+        p.created_at = now();
+        p.comment_rows = empty_commentrows;
+        p.like_cnt = 0;
+        p.image_urls = image_urls;
+    });
+
+    // debug print
+    print("post# created", hash_value);
 }
 
 void puton_service::updatepost(const account_name author, const uint32_t id, const string to_update)
@@ -88,6 +118,7 @@ void puton_service::deletepost(const account_name author, const uint64_t id)
     // delete post
     post_table.erase(itr);
 
+    // debug print
     print("post#", id, " deleted");
 }
 

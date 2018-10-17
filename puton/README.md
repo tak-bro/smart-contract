@@ -28,6 +28,11 @@ $ cleos push action puton getrandom '["tak"]' -p puton
 $ cleos push action puton addpost '["tak", "TEST1111"]' -p tak
 $ cleos push action puton addpost '["tak", "TEST22222"]' -p tak
 $ cleos push action puton addpost '["curl", "CURL_CURL_HASH"]' -p curl
+$ cleos push action puton addpost '["curl", "CURL_CURL_HASH22"]' -p curl
+
+# Add post with image urls
+$ cleos push action puton addimages '["tak", "test2222", ["bbbb","aaaaa"]]' -p tak
+$ cleos push action puton addimages '["curl", "test33333", ["xxxxxxxbbbb","aagggggggaaa"]]' -p curl
 
 # Update post
 $ cleos push action puton updatepost '["tak", "1", "TAK_UPDATED"]' -p tak
@@ -37,51 +42,4 @@ $ cleos push action puton deletepost '["tak", "1"]' -p tak
 
 # Check DB
 $ cleos get table puton puton users
-{
-  "rows": [{
-      "account": "curl",
-      "written_rows": [{
-          "post_id": 2
-        }
-      ]
-    },{
-      "account": "tak",
-      "written_rows": [{
-          "post_id": 0
-        },{
-          "post_id": 1
-        }
-      ]
-    }
-  ],
-  "more": false
-}
-
 $ cleos get table puton puton posts
-{
-  "rows": [{
-      "id": 0,
-      "author": "tak",
-      "post_hash": "TEST1111",
-      "like_cnt": 0,
-      "comment_rows": [],
-      "created_at": 1539749968
-    },{
-      "id": 1,
-      "author": "tak",
-      "post_hash": "TEST22222",
-      "like_cnt": 0,
-      "comment_rows": [],
-      "created_at": 1539749972
-    },{
-      "id": 2,
-      "author": "curl",
-      "post_hash": "CURL_CURL_HASH",
-      "like_cnt": 0,
-      "comment_rows": [],
-      "created_at": 1539749976
-    }
-  ],
-  "more": false
-}
-```
