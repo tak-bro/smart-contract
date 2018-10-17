@@ -1,39 +1,39 @@
-# style_service
+# puton_service(퓨턴)
 
 ## TODO
 - [ ] post_rows를 user table에 넣어야할듯 
 - [ ] post 테이블에 comment_rows 추가
 
-## how to use성
+## how to use
 
 ```sh
 # Create account for server
-$ cleos create account eosio styleserver EOS8Txt52C9jUD4Pc5LFsceeBy9RKi9MSVEV4WvoaB2KpEjHwyPz8 EOS8Txt52C9jUD4Pc5LFsceeBy9RKi9MSVEV4WvoaB2KpEjHwyPz8
+$ cleos create account eosio puton EOS8Txt52C9jUD4Pc5LFsceeBy9RKi9MSVEV4WvoaB2KpEjHwyPz8 EOS8Txt52C9jUD4Pc5LFsceeBy9RKi9MSVEV4WvoaB2KpEjHwyPz8
 
 # Create account for user
 $ cleos create account eosio tak EOS8Txt52C9jUD4Pc5LFsceeBy9RKi9MSVEV4WvoaB2KpEjHwyPz8 EOS8Txt52C9jUD4Pc5LFsceeBy9RKi9MSVEV4WvoaB2KpEjHwyPz8
 $ cleos create account eosio curl EOS8Txt52C9jUD4Pc5LFsceeBy9RKi9MSVEV4WvoaB2KpEjHwyPz8 EOS8Txt52C9jUD4Pc5LFsceeBy9RKi9MSVEV4WvoaB2KpEjHwyPz8
 
 # Build contract
-$ ./build.sh styleserver style
+$ ./build.sh puton puton
 
 # Create new buzzler user
-$ cleos push action styleserver createuser '["tak"]' -p styleserver
-$ cleos push action styleserver createuser '["curl"]' -p styleserver
+$ cleos push action puton createuser '["tak"]' -p puton
+$ cleos push action puton createuser '["curl"]' -p puton
 
 # Get Random number
-$ cleos push action styleserver getrandom '["tak"]' -p styleserver
+$ cleos push action puton getrandom '["tak"]' -p puton
 
 # Add post
-$ cleos push action styleserver addpost '["tak", "HASH_VALUE HASH_VALUE HASH_VALUE HASH_VALUE HASH_VALUE HASH_VALUE"]' -p styleserver
-$ cleos push action styleserver addpost '["tak", "HASH_222222222222222"]' -p styleserver
-$ cleos push action styleserver addpost '["curl", "CURL_CURL_HASH"]' -p styleserver
+$ cleos push action puton addpost '["tak", "HASH_VALUE HASH_VALUE HASH_VALUE HASH_VALUE HASH_VALUE HASH_VALUE"]' -p puton
+$ cleos push action puton addpost '["tak", "HASH_222222222222222"]' -p puton
+$ cleos push action puton addpost '["curl", "CURL_CURL_HASH"]' -p puton
 
 # Update post
-$ cleos push action styleserver updatepost '["tak", "1", "TAK_UPDATED"]' -p styleserver
+$ cleos push action puton updatepost '["tak", "1", "TAK_UPDATED"]' -p puton
 
 # Check DB
-$ cleos get table styleserver styleserver users
+$ cleos get table puton puton users
 {
   "rows": [{
       "account": "curl",
@@ -46,7 +46,7 @@ $ cleos get table styleserver styleserver users
   "more": false
 }
 
-$ cleos get table styleserver styleserver posts
+$ cleos get table puton puton posts
 {
   "rows": [{
       "author": "curl",

@@ -16,10 +16,10 @@ struct postrow {
     time created_at = 0;
 };
 
-class style_service: public eosio::contract {
+class puton_service: public eosio::contract {
 
     public: 
-        style_service(account_name self): contract::contract(self),
+        puton_service(account_name self): contract::contract(self),
                                           user_table(self, self),
                                           post_table(self, self) {}
 
@@ -67,4 +67,4 @@ class style_service: public eosio::contract {
 
  };
 
-EOSIO_ABI(style_service, (createuser)(addpost)(updatepost)(getrandom))
+EOSIO_ABI(puton_service, (createuser)(addpost)(updatepost)(getrandom))

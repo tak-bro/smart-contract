@@ -1,6 +1,6 @@
-#include<style.hpp>
+#include<puton.hpp>
 
-void style_service::getrandom(account_name author)
+void puton_service::getrandom(account_name author)
 {
     auto &random = random_gen::get_instance(author);
     // get random
@@ -9,9 +9,9 @@ void style_service::getrandom(account_name author)
     print("random# ", random_num);
 }
 
-void style_service::addpost(const account_name user, const string hash_value)
+void puton_service::addpost(const account_name user, const string hash_value)
 {
-    // check style server
+    // check puton server
     require_auth(_self);
 
     // check account on user_table
@@ -44,9 +44,9 @@ void style_service::addpost(const account_name user, const string hash_value)
     print(name{user}, "'s post added #", row.id);
 }
 
-void style_service::updatepost(const account_name author, const uint32_t id, const string to_update)
+void puton_service::updatepost(const account_name author, const uint32_t id, const string to_update)
 {
-    // check style server
+    // check puton server
     require_auth(_self);
 
     // check account on user_table
@@ -74,9 +74,9 @@ void style_service::updatepost(const account_name author, const uint32_t id, con
     print(name{author}, "'s post updated #", id);
 }
 
-void style_service::createuser(const account_name account)
+void puton_service::createuser(const account_name account)
 {
-    // check style server
+    // check puton server
     require_auth(_self);
 
     // check account on user_table
