@@ -35,7 +35,13 @@ class puton_service: public eosio::contract {
         void addpost(const account_name author, const string hash_value);
 
         // @abi action 
-        void updatepost(const account_name author, const uint32_t id, const string to_update);
+        void updatepost(const account_name author, const uint64_t id, const string to_update);
+
+        // @abi action 
+        void updateimages(const account_name author, const uint64_t id, const string to_update, std::vector<std::string> args);
+
+        // @abi action 
+        void likepost(const account_name user, const uint64_t id);
 
          // @abi action
         void deletepost(const account_name author, const uint64_t id);
@@ -52,11 +58,11 @@ class puton_service: public eosio::contract {
         // @abi table users 
         struct user {
             account_name account;
-            std::vector<postrow> written_rows;
+            std::vector<postrow> post_rows;
 
             auto primary_key() const { return account; }
 
-            EOSLIB_SERIALIZE(user, (account)(written_rows))
+            EOSLIB_SERIALIZE(user, (account)(post_rows))
         };
 
         // @abi table posts
@@ -67,11 +73,12 @@ class puton_service: public eosio::contract {
             std::vector<std::string> image_urls;
             std::vector<commentrow> comment_rows;
             uint8_t like_cnt;
+            uint8_t point;
             time created_at;
 
             auto primary_key() const { return id; }
 
-            EOSLIB_SERIALIZE(post, (id)(author)(post_hash)(image_urls)(comment_rows)(like_cnt)(created_at))
+            EOSLIB_SERIALIZE(post, (id)(author)(post_hash)(image_urls)(comment_rows)(like_cnt)(point)(created_at))
         };
 
         // define tables
@@ -84,4 +91,4 @@ class puton_service: public eosio::contract {
         std::vector<string> empty_imagerows;
  };
 
-EOSIO_ABI(puton_service, (createuser)(addpost)(addimages)(updatepost)(deletepost)(printrandom))
+EOSIO_ABI(puton_service, (createuser)(addpost)(addimages)(updatepost)(likepost)(updateimages)(deletepost)(printrandom))

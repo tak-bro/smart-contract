@@ -17,7 +17,7 @@ $ cleos create account eosio curl EOS8Txt52C9jUD4Pc5LFsceeBy9RKi9MSVEV4WvoaB2KpE
 # Build contract
 $ ./build.sh puton puton
 
-# Create new buzzler user
+# Create new puton user
 $ cleos push action puton createuser '["tak"]' -p puton
 $ cleos push action puton createuser '["curl"]' -p puton
 
@@ -31,11 +31,18 @@ $ cleos push action puton addpost '["curl", "CURL_CURL_HASH"]' -p curl
 $ cleos push action puton addpost '["curl", "CURL_CURL_HASH22"]' -p curl
 
 # Add post with image urls
-$ cleos push action puton addimages '["tak", "test2222", ["bbbb","aaaaa"]]' -p tak
+$ cleos push action puton addimages '["tak", "test2222", ["https://www.google.co.kr/imgres?imgurl=https%3A%2F%2Fblockgeeks.com%2Fwp-content%2Fuploads%2F2018%2F01%2FWhat-is-EOS-Blockchain_-Beginners-Guide.png&imgrefurl=https%3A%2F%2Fblockgeeks.com%2Fguides%2Feos-blockchain%2F&docid=GJUKsWa0TUo42M&tbnid=ZjzOVChgnxEeGM%3A&vet=10ahUKEwip07-S4ozeAhVMEHAKHcYoDXIQMwgwKAAwAA..i&w=1200&h=628&bih=888&biw=1879&q=eos%20blockchain&ved=0ahUKEwip07-S4ozeAhVMEHAKHcYoDXIQMwgwKAAwAA&iact=mrc&uact=8","https://www.google.co.kr/imgres?imgurl=https%3A%2F%2Fblockgeeks.com%2Fwp-content%2Fuploads%2F2018%2F01%2FWhat-is-EOS-Blockchain_-Beginners-Guide.png&imgrefurl=https%3A%2F%2Fblockgeeks.com%2Fguides%2Feos-blockchain%2F&docid=GJUKsWa0TUo42M&tbnid=ZjzOVChgnxEeGM%3A&vet=10ahUKEwip07-S4ozeAhVMEHAKHcYoDXIQMwgwKAAwAA..i&w=1200&h=628&bih=888&biw=1879&q=eos%20blockchain&ved=0ahUKEwip07-S4ozeAhVMEHAKHcYoDXIQMwgwKAAwAA&iact=mrc&uact=8"]]' -p tak
 $ cleos push action puton addimages '["curl", "test33333", ["xxxxxxxbbbb","aagggggggaaa"]]' -p curl
 
 # Update post
 $ cleos push action puton updatepost '["tak", "1", "TAK_UPDATED"]' -p tak
+
+# Update post with image urls
+$ cleos push action puton updateimages '["tak", "1", "TAK_UPDATED", ["xxxxxxxbbbb","aagggggggaaa","asd","asdasd","asdas"]]' -p tak
+
+# Like post
+$ cleos push action puton likepost '["tak", "1"]' -p tak
+$ cleos push action puton likepost '["curl", "1"]' -p curl
 
 # Delete post
 $ cleos push action puton deletepost '["tak", "1"]' -p tak
