@@ -17,7 +17,7 @@ $ cleos create account eosio curl EOS8Txt52C9jUD4Pc5LFsceeBy9RKi9MSVEV4WvoaB2KpE
 # Build contract
 $ ./build.sh puton puton
 
-# Create new puton user
+# Create new buzzler user
 $ cleos push action puton createuser '["tak"]' -p puton
 $ cleos push action puton createuser '["curl"]' -p puton
 
@@ -42,11 +42,23 @@ $ cleos push action puton updateimages '["tak", "1", "TAK_UPDATED", ["xxxxxxxbbb
 
 # Like post
 $ cleos push action puton likepost '["tak", "1"]' -p tak
-$ cleos push action puton likepost '["curl", "1"]' -p curl
+$ cleos push action puton likepost '["tak", "1"]' -p curl
 
 # Delete post
 $ cleos push action puton deletepost '["tak", "1"]' -p tak
 
+# Add comment
+$ cleos push action puton addcmt '["tak", "1", "comment"]' -p tak
+
+# Update comment
+$ cleos push action puton updatecmt '["tak", "1", "0", "updated comment"]' -p tak
+
+# Delete comment
+$ cleos push action puton deletecmt '["tak", "1", "0"]' -p tak
+
+
+
 # Check DB
 $ cleos get table puton puton users
 $ cleos get table puton puton posts
+$ cleos get table puton puton posts --lower "10" --upper "20"

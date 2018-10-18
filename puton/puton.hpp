@@ -17,6 +17,9 @@ struct postrow {
 // struct comment for post_table
 struct commentrow {
     uint64_t comment_id = 0;
+    account_name author = 0;
+    string comment_hash = "";
+    time created_at = 0;
 };
 
 class puton_service: public eosio::contract {
@@ -49,6 +52,16 @@ class puton_service: public eosio::contract {
         // @abi action
         void addimages(const account_name author, const string hash_value, std::vector<std::string> args);
 
+        /// COMMENT ACTIONS
+        // @abi action
+        void addcmt(const account_name author, const uint64_t post_id, const string hash_value);
+
+        // @abi action 
+        void updatecmt(const account_name author, const uint64_t post_id, const uint64_t comment_id, const string to_update);
+
+         // @abi action
+        void deletecmt(const account_name author, const uint64_t post_id, const uint64_t comment_id);
+
         /// ETC
         // @abi action
         void printrandom(account_name author); // for test
@@ -72,13 +85,14 @@ class puton_service: public eosio::contract {
             std::string post_hash;
             std::vector<std::string> image_urls;
             std::vector<commentrow> comment_rows;
+            uint64_t last_id;
             uint8_t like_cnt;
             uint8_t point;
             time created_at;
 
             auto primary_key() const { return id; }
 
-            EOSLIB_SERIALIZE(post, (id)(author)(post_hash)(image_urls)(comment_rows)(like_cnt)(point)(created_at))
+            EOSLIB_SERIALIZE(post, (id)(author)(post_hash)(image_urls)(comment_rows)(last_id)(like_cnt)(point)(created_at))
         };
 
         // define tables
@@ -91,4 +105,4 @@ class puton_service: public eosio::contract {
         std::vector<string> empty_imagerows;
  };
 
-EOSIO_ABI(puton_service, (createuser)(addpost)(addimages)(updatepost)(likepost)(updateimages)(deletepost)(printrandom))
+EOSIO_ABI(puton_service, (createuser)(addpost)(addimages)(updatepost)(likepost)(updateimages)(deletepost)(printrandom)(addcmt)(updatecmt)(deletecmt))

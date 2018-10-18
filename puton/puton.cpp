@@ -43,6 +43,7 @@ void puton_service::addpost(const account_name user, const string hash_value)
         p.comment_rows = empty_commentrows;
         p.like_cnt = 0;
         p.point = 0;
+        p.last_id = 0;
     });
 
     // update post_id to user's postrows 
@@ -84,6 +85,7 @@ void puton_service::addimages(const account_name user, const string hash_value, 
         p.like_cnt = 0;
         p.point = 0;
         p.image_urls = image_urls;
+        p.last_id = 0;
     });
 
     // update post_id to user's postrows
@@ -94,7 +96,7 @@ void puton_service::addimages(const account_name user, const string hash_value, 
     });
 
     // debug print
-    print("post# created", hash_value);
+    print("post#", post_id, " created");
 }
 
 void puton_service::updatepost(const account_name author, const uint64_t id, const string to_update)
@@ -183,6 +185,100 @@ void puton_service::deletepost(const account_name author, const uint64_t id)
 
     // debug print
     print("post#", id, " deleted");
+}
+
+/// COMMENT ACTION
+void puton_service::addcmt(const account_name author, const uint64_t post_id, const string hash_value)
+{
+    // check user permission
+    require_auth(author);
+
+    // check account on user_table
+    auto user_itr = user_table.find(author);
+    eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
+
+    // check id on post_table
+    auto itr = post_table.find(post_id);
+    eosio_assert(itr != post_table.end(), "PostTable does not has id");
+
+    // set commentrow
+    commentrow row;
+    row.author = author;
+    row.comment_hash = hash_value;
+    row.created_at = now();
+
+    // add comment to post row
+    post_table.modify(itr, _self, [&](auto &post) {
+        row.comment_id = post.last_id + 1;
+        post.last_id = row.comment_id;
+        post.comment_rows.push_back(row);
+    });
+
+    print("cmt#", row.comment_id, " added to post#", itr->id);
+}
+
+void puton_service::updatecmt(const account_name author, const uint64_t post_id, const uint64_t comment_id, const string to_update)
+{
+    // check user permission
+    require_auth(author);
+
+    // check account on user_table
+    auto user_itr = user_table.find(author);
+    eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
+
+    // check id on post_table
+    auto itr = post_table.find(post_id);
+    eosio_assert(itr != post_table.end(), "PostTable does not has id");
+
+    // update comment row
+    bool isFound = false;
+    post_table.modify(itr, _self, [&](auto &post) {
+        for (int i = 0; i < post.comment_rows.size(); i++) {
+            if (post.comment_rows[i].comment_id == comment_id) {
+                // check comment author
+                eosio_assert(post.comment_rows[i].author == author, "Not the author of this comment");
+                post.comment_rows[i].comment_hash = to_update;
+                isFound = true;
+                break;
+            }
+        }
+    });
+
+    // debug print
+    eosio_assert(isFound, "Could not found comment");
+    print("cmt#", comment_id, " updated");
+}
+
+void puton_service::deletecmt(const account_name author, const uint64_t post_id, const uint64_t comment_id)
+{
+    // check user permission
+    require_auth(author);
+
+    // check account on user_table
+    auto user_itr = user_table.find(author);
+    eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
+
+    // check id on post_table
+    auto itr = post_table.find(post_id);
+    eosio_assert(itr != post_table.end(), "PostTable does not has id");
+
+    // update comment row
+    bool isFound = false;
+    post_table.modify(itr, _self, [&](auto &post) {
+        for (int i = 0; i < post.comment_rows.size(); i++) {
+            if (post.comment_rows[i].comment_id == comment_id) {
+                // check comment author
+                eosio_assert(post.comment_rows[i].author == author, "Not the author of this comment");
+                post.comment_rows.erase(post.comment_rows.begin() + i);
+                isFound = true;
+                break;
+            }
+        }
+    });
+
+    // debug print
+    eosio_assert(isFound, "Could not found comment");
+    print("cmt#", comment_id, " deleted");
 }
 
 /// ETC
