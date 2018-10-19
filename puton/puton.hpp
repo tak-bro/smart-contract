@@ -14,11 +14,11 @@ struct postrow {
     uint64_t post_id = 0;
 };
 
-// struct comment for post_table
-struct commentrow {
-    uint64_t comment_id = 0;
+// struct cmt for post_table
+struct cmtrow {
+    uint64_t cmt_id = 0;
     account_name author = 0;
-    string comment_hash = "";
+    string cmt_hash = "";
     time created_at = 0;
 };
 
@@ -57,10 +57,10 @@ class puton_service: public eosio::contract {
         void addcmt(const account_name author, const uint64_t post_id, const string hash_value);
 
         // @abi action 
-        void updatecmt(const account_name author, const uint64_t post_id, const uint64_t comment_id, const string to_update);
+        void updatecmt(const account_name author, const uint64_t post_id, const uint64_t cmt_id, const string to_update);
 
-         // @abi action
-        void deletecmt(const account_name author, const uint64_t post_id, const uint64_t comment_id);
+        // @abi action
+        void deletecmt(const account_name author, const uint64_t post_id, const uint64_t cmt_id);
 
         /// ETC
         // @abi action
@@ -84,15 +84,15 @@ class puton_service: public eosio::contract {
             account_name author;
             std::string post_hash;
             std::vector<std::string> image_urls;
-            std::vector<commentrow> comment_rows;
-            uint64_t last_id;
+            std::vector<cmtrow> cmt_rows;
+            uint64_t last_id; // for cmt
             uint8_t like_cnt;
             uint8_t point;
             time created_at;
 
             auto primary_key() const { return id; }
 
-            EOSLIB_SERIALIZE(post, (id)(author)(post_hash)(image_urls)(comment_rows)(last_id)(like_cnt)(point)(created_at))
+            EOSLIB_SERIALIZE(post, (id)(author)(post_hash)(image_urls)(cmt_rows)(last_id)(like_cnt)(point)(created_at))
         };
 
         // define tables
@@ -101,7 +101,7 @@ class puton_service: public eosio::contract {
 
         // private variable
         std::vector<postrow> empty_postrows;
-        std::vector<commentrow> empty_commentrows;
+        std::vector<cmtrow> empty_cmtrows;
         std::vector<string> empty_imagerows;
  };
 
