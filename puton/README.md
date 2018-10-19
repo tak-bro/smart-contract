@@ -1,8 +1,8 @@
 # puton_service(퓨턴)
 
 ## TODO
-- [ ] post_rows를 user table에 넣어야할듯 
-- [ ] post 테이블에 comment_rows 추가
+- [x] post_rows를 user table에 넣어야할듯 
+- [x] post 테이블에 comment_rows 추가
 
 ## how to use
 
@@ -42,23 +42,98 @@ $ cleos push action puton updateimages '["tak", "1", "TAK_UPDATED", ["xxxxxxxbbb
 
 # Like post
 $ cleos push action puton likepost '["tak", "1"]' -p tak
-$ cleos push action puton likepost '["tak", "1"]' -p curl
+$ cleos push action puton likepost '["tak", "4"]' -p tak
+$ cleos push action puton likepost '["curl", "4"]' -p curl
+
+# Cancel Like
+$ cleos push action puton cancellike '["tak", "4"]' -p tak
 
 # Delete post
 $ cleos push action puton deletepost '["tak", "1"]' -p tak
 
 # Add comment
-$ cleos push action puton addcmt '["tak", "1", "comment"]' -p tak
+$ cleos push action puton addcmt '["tak", "2", "comment"]' -p tak
 
 # Update comment
-$ cleos push action puton updatecmt '["tak", "1", "0", "updated comment"]' -p tak
+$ cleos push action puton updatecmt '["tak", "2", "1", "updated comment"]' -p tak
 
 # Delete comment
-$ cleos push action puton deletecmt '["tak", "1", "0"]' -p tak
-
+$ cleos push action puton deletecmt '["tak", "2", "2"]' -p tak
 
 
 # Check DB
 $ cleos get table puton puton users
+{
+  "rows": [{
+      "account": "curl",
+      "liked_rows": [{
+          "post_id": 4
+        }
+      ]
+    },{
+      "account": "tak",
+      "liked_rows": [{
+          "post_id": 2
+        }
+      ]
+    }
+  ],
+  "more": false
+}
+
 $ cleos get table puton puton posts
+{
+  "rows": [{
+      "id": 0,
+      "author": "tak",
+      "post_hash": "TEST1111",
+      "image_urls": [],
+      "cmt_rows": [],
+      "last_id": 0,
+      "like_cnt": 0,
+      "point": 0,
+      "created_at": 1539932282
+    },{
+      "id": 2,
+      "author": "curl",
+      "post_hash": "CURL_CURL_HASH",
+      "image_urls": [],
+      "cmt_rows": [{
+          "cmt_id": 1,
+          "author": "tak",
+          "cmt_hash": "updated comment",
+          "created_at": 1539932472
+        }
+      ],
+      "last_id": 2,
+      "like_cnt": 1,
+      "point": 1,
+      "created_at": 1539932299
+    },{
+      "id": 3,
+      "author": "curl",
+      "post_hash": "CURL_CURL_HASH22",
+      "image_urls": [],
+      "cmt_rows": [],
+      "last_id": 0,
+      "like_cnt": 0,
+      "point": 0,
+      "created_at": 1539932302
+    },{
+      "id": 4,
+      "author": "curl",
+      "post_hash": "test33333",
+      "image_urls": [
+        "xxxxxxxbbbb",
+        "aagggggggaaa"
+      ],
+      "cmt_rows": [],
+      "last_id": 0,
+      "like_cnt": 1,
+      "point": 0,
+      "created_at": 1539932307
+    }
+  ],
+  "more": false
+}
 $ cleos get table puton puton posts --lower "10" --upper "20"

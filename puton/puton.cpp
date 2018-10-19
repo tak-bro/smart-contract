@@ -13,7 +13,7 @@ void puton_service::createuser(const account_name account)
     // create user
     user_table.emplace(_self, [&](auto& u) {
         u.account = account;
-        u.post_rows = empty_postrows;
+        u.liked_rows = empty_postrows;
     });
 
     // debug print
@@ -44,13 +44,6 @@ void puton_service::addpost(const account_name user, const string hash_value)
         p.like_cnt = 0;
         p.point = 0;
         p.last_id = 0;
-    });
-
-    // update post_id to user's postrows 
-    postrow row;
-    user_table.modify(user_itr, _self, [&](auto& user) {
-        row.post_id = post_id;
-        user.post_rows.push_back(row);
     });
 
     // debug print
@@ -86,13 +79,6 @@ void puton_service::addimages(const account_name user, const string hash_value, 
         p.point = 0;
         p.image_urls = image_urls;
         p.last_id = 0;
-    });
-
-    // update post_id to user's postrows
-    postrow row;
-    user_table.modify(user_itr, _self, [&](auto& user) {
-        row.post_id = post_id;
-        user.post_rows.push_back(row);
     });
 
     // debug print
@@ -159,6 +145,20 @@ void puton_service::likepost(const account_name user, const uint64_t id)
     auto post_itr = post_table.find(id);
     eosio_assert(post_itr != post_table.end(), "PostTable does not has id");
 
+    // check account on user_table
+    auto user_itr = user_table.find(user);
+    eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
+
+    // check liked
+    bool alreadyLiked = false;
+    for (int i = 0; i < user_itr->liked_rows.size(); i++) {
+        if (user_itr->liked_rows[i].post_id == id) {
+            alreadyLiked = true;
+            break;
+        }
+    }
+    eosio_assert(!alreadyLiked, "already liked");
+
     // update post_table
     post_table.modify(post_itr, _self, [&](auto &post) {
         post.like_cnt = post.like_cnt + 1;
@@ -167,8 +167,63 @@ void puton_service::likepost(const account_name user, const uint64_t id)
         }
     });
 
+    // update post_id to user's postrows 
+    postrow row;
+    user_table.modify(user_itr, _self, [&](auto& user) {
+        row.post_id = id;
+        user.liked_rows.push_back(row);
+    });
+
     // debug print
     print("post#", id, " liked");
+}
+
+void puton_service::cancellike(const account_name user, const uint64_t id)
+{
+    // check user permission
+    require_auth(user);
+
+    // check post on post_table
+    auto post_itr = post_table.find(id);
+    eosio_assert(post_itr != post_table.end(), "PostTable does not has id");
+
+    // check account on user_table
+    auto user_itr = user_table.find(user);
+    eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
+
+    // check liked
+    bool isLiked = false;
+    for (int i = 0; i < user_itr->liked_rows.size(); i++) {
+        if (user_itr->liked_rows[i].post_id == id) {
+            isLiked = true;
+            break;
+        }
+    }
+    eosio_assert(isLiked, "The user did not like this post");
+
+    // update post_table
+    post_table.modify(post_itr, _self, [&](auto &post) {
+        post.like_cnt = post.like_cnt - 1;
+        if (user != post.author) {
+            post.point = post.point - 1;
+        }
+    });
+
+    // update cmt row
+    bool isFound = false;
+    user_table.modify(user_itr, _self, [&](auto &user) {
+        for (int i = 0; i < user.liked_rows.size(); i++) {
+            if (user.liked_rows[i].post_id == id) {
+                user.liked_rows.erase(user.liked_rows.begin() + i);
+                isFound = true;
+                break;
+            }
+        }
+    });
+
+    // debug print
+    eosio_assert(isFound, "Could not found liked post");
+    print("cancel like post#", id);
 }
 
 void puton_service::deletepost(const account_name author, const uint64_t id)

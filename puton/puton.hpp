@@ -46,6 +46,9 @@ class puton_service: public eosio::contract {
         // @abi action 
         void likepost(const account_name user, const uint64_t id);
 
+        // @abi action 
+        void cancellike(const account_name user, const uint64_t id);
+
          // @abi action
         void deletepost(const account_name author, const uint64_t id);
 
@@ -71,11 +74,11 @@ class puton_service: public eosio::contract {
         // @abi table users 
         struct user {
             account_name account;
-            std::vector<postrow> post_rows;
+            std::vector<postrow> liked_rows;
 
             auto primary_key() const { return account; }
 
-            EOSLIB_SERIALIZE(user, (account)(post_rows))
+            EOSLIB_SERIALIZE(user, (account)(liked_rows))
         };
 
         // @abi table posts
@@ -105,4 +108,4 @@ class puton_service: public eosio::contract {
         std::vector<string> empty_imagerows;
  };
 
-EOSIO_ABI(puton_service, (createuser)(addpost)(addimages)(updatepost)(likepost)(updateimages)(deletepost)(printrandom)(addcmt)(updatecmt)(deletecmt))
+EOSIO_ABI(puton_service, (createuser)(addpost)(addimages)(updatepost)(likepost)(cancellike)(updateimages)(deletepost)(printrandom)(addcmt)(updatecmt)(deletecmt))
