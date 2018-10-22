@@ -16,7 +16,7 @@ struct postrow {
 
 // struct cmt for post_table
 struct cmtrow {
-    uint64_t cmt_id = 0;
+    uint16_t cmt_id = 0;
     account_name author = 0;
     string cmt_hash = "";
     time created_at = 0;
@@ -60,10 +60,10 @@ class puton_service: public eosio::contract {
         void addcmt(const account_name author, const uint64_t post_id, const string hash_value);
 
         // @abi action 
-        void updatecmt(const account_name author, const uint64_t post_id, const uint64_t cmt_id, const string to_update);
+        void updatecmt(const account_name author, const uint64_t post_id, const uint16_t cmt_id, const string to_update);
 
         // @abi action
-        void deletecmt(const account_name author, const uint64_t post_id, const uint64_t cmt_id);
+        void deletecmt(const account_name author, const uint64_t post_id, const uint16_t cmt_id);
 
         /// ETC
         // @abi action
@@ -88,9 +88,9 @@ class puton_service: public eosio::contract {
             std::string post_hash;
             std::vector<std::string> image_urls;
             std::vector<cmtrow> cmt_rows;
-            uint64_t last_id; // for cmt
-            uint8_t like_cnt;
-            uint8_t point;
+            uint16_t last_id; // for cmt
+            uint16_t like_cnt;
+            uint16_t point;
             time created_at;
 
             auto primary_key() const { return id; }

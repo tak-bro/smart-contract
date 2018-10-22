@@ -1,5 +1,8 @@
 #include<puton.hpp>
 
+// const uint64_t THREE_DAYS = 3 * 86400; // 3days
+const uint64_t THREE_DAYS = 1 * 60; // 1 minutes
+
 /// USER ACTIONS
 void puton_service::createuser(const account_name account)
 {
@@ -162,12 +165,15 @@ void puton_service::likepost(const account_name user, const uint64_t id)
     // update post_table
     post_table.modify(post_itr, _self, [&](auto &post) {
         post.like_cnt = post.like_cnt + 1;
-        if (user != post.author) {
+        // calculate time range
+        if (user != post.author && post.created_at + THREE_DAYS > now()) {
             post.point = post.point + 1;
+        } else {
+            print("written more than 3 days ago\n");
         }
     });
 
-    // update post_id to user's postrows 
+    // update post_id to user's liked_rows 
     postrow row;
     user_table.modify(user_itr, _self, [&](auto& user) {
         row.post_id = id;
@@ -204,12 +210,15 @@ void puton_service::cancellike(const account_name user, const uint64_t id)
     // update post_table
     post_table.modify(post_itr, _self, [&](auto &post) {
         post.like_cnt = post.like_cnt - 1;
-        if (user != post.author) {
+        // calculate time range
+        if (user != post.author && post.created_at + THREE_DAYS > now()) {
             post.point = post.point - 1;
+        } else {
+            print("written more than 3 days ago\n");
         }
     });
 
-    // update cmt row
+    // update liked_rows of user
     bool isFound = false;
     user_table.modify(user_itr, _self, [&](auto &user) {
         for (int i = 0; i < user.liked_rows.size(); i++) {
@@ -267,12 +276,19 @@ void puton_service::addcmt(const account_name author, const uint64_t post_id, co
         row.cmt_id = post.last_id + 1;
         post.last_id = row.cmt_id;
         post.cmt_rows.push_back(row);
+
+        // add point to post 
+        if (author != post.author && post.created_at + THREE_DAYS > now()) {
+            post.point = post.point + 1;
+        } else {
+            print("written more than 3 days ago\n");
+        }
     });
 
-    print("cmt#", row.cmt_id, " added to post#", itr->id);
+    print("comment added to post#", itr->id);
 }
 
-void puton_service::updatecmt(const account_name author, const uint64_t post_id, const uint64_t cmt_id, const string to_update)
+void puton_service::updatecmt(const account_name author, const uint64_t post_id, const uint16_t cmt_id, const string to_update)
 {
     // check user permission
     require_auth(author);
@@ -301,10 +317,10 @@ void puton_service::updatecmt(const account_name author, const uint64_t post_id,
 
     // debug print
     eosio_assert(isFound, "Could not found cmt");
-    print("cmt#", cmt_id, " updated");
+    print("comment updated");
 }
 
-void puton_service::deletecmt(const account_name author, const uint64_t post_id, const uint64_t cmt_id)
+void puton_service::deletecmt(const account_name author, const uint64_t post_id, const uint16_t cmt_id)
 {
     // check user permission
     require_auth(author);
@@ -326,6 +342,13 @@ void puton_service::deletecmt(const account_name author, const uint64_t post_id,
                 eosio_assert(post.cmt_rows[i].author == author, "Not the author of this cmt");
                 post.cmt_rows.erase(post.cmt_rows.begin() + i);
                 isFound = true;
+
+                // add point to post
+                if (author != post.author && post.created_at + THREE_DAYS > now()) {
+                    post.point = post.point - 1;
+                } else {
+                    print("written more than 3 days ago\n");
+                }
                 break;
             }
         }
@@ -333,7 +356,7 @@ void puton_service::deletecmt(const account_name author, const uint64_t post_id,
 
     // debug print
     eosio_assert(isFound, "Could not found cmt");
-    print("cmt#", cmt_id, " deleted");
+    print("comment deleted");
 }
 
 /// ETC

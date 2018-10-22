@@ -3,6 +3,7 @@
 ## TODO
 - [x] post_rows를 user table에 넣어야할듯 
 - [x] post 테이블에 comment_rows 추가
+- [ ] comment 작성하면 point 올라가게
 
 ## how to use
 
@@ -38,7 +39,7 @@ $ cleos push action puton addimages '["curl", "test33333", ["xxxxxxxbbbb","aaggg
 $ cleos push action puton updatepost '["tak", "1", "TAK_UPDATED"]' -p tak
 
 # Update post with image urls
-$ cleos push action puton updateimages '["tak", "1", "TAK_UPDATED", ["xxxxxxxbbbb","aagggggggaaa","asd","asdasd","asdas"]]' -p tak
+$ cleos push action puton updateimages '["tak", "1", "TAK_UPDATED_WITH_IMAGE", ["xxxxxxxbbbb","aagggggggaaa","asd","asdasd","asdas"]]' -p tak
 
 # Like post
 $ cleos push action puton likepost '["tak", "1"]' -p tak
@@ -59,7 +60,6 @@ $ cleos push action puton updatecmt '["tak", "2", "1", "updated comment"]' -p ta
 
 # Delete comment
 $ cleos push action puton deletecmt '["tak", "2", "2"]' -p tak
-
 
 # Check DB
 $ cleos get table puton puton users
