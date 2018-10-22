@@ -139,6 +139,25 @@ void puton_service::updateimages(const account_name author, const uint64_t id, c
     print("post#", id, " updated");
 }
 
+bool puton_service::checkLiked(const std::vector<postrow> &rows, const uint64_t id)
+{
+    // binary search
+    int left = 0;
+    int right = rows.size() - 1;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (rows[mid].post_id < id) {
+            left = mid + 1;
+        } else if (id < rows[mid].post_id) {
+            right = mid - 1;
+        } else {
+            return true;
+        }
+    }
+    return false;
+}
+
 void puton_service::likepost(const account_name user, const uint64_t id)
 {
     // check user permission
@@ -153,13 +172,7 @@ void puton_service::likepost(const account_name user, const uint64_t id)
     eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
 
     // check liked
-    bool alreadyLiked = false;
-    for (int i = 0; i < user_itr->liked_rows.size(); i++) {
-        if (user_itr->liked_rows[i].post_id == id) {
-            alreadyLiked = true;
-            break;
-        }
-    }
+    bool alreadyLiked = checkLiked(user_itr->liked_rows, id);
     eosio_assert(!alreadyLiked, "already liked");
 
     // update post_table
@@ -198,13 +211,7 @@ void puton_service::cancellike(const account_name user, const uint64_t id)
     eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
 
     // check liked
-    bool isLiked = false;
-    for (int i = 0; i < user_itr->liked_rows.size(); i++) {
-        if (user_itr->liked_rows[i].post_id == id) {
-            isLiked = true;
-            break;
-        }
-    }
+    bool isLiked = checkLiked(user_itr->liked_rows, id);
     eosio_assert(isLiked, "The user did not like this post");
 
     // update post_table

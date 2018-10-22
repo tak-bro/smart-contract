@@ -106,6 +106,9 @@ class puton_service: public eosio::contract {
         std::vector<postrow> empty_postrows;
         std::vector<cmtrow> empty_cmtrows;
         std::vector<string> empty_imagerows;
+
+        // private method
+        bool checkLiked(const std::vector<postrow>& liked_rows, const uint64_t id);
  };
 
 EOSIO_ABI(puton_service, (createuser)(addpost)(addimages)(updatepost)(likepost)(cancellike)(updateimages)(deletepost)(printrandom)(addcmt)(updatecmt)(deletecmt))
