@@ -1,7 +1,7 @@
 #include<puton.hpp>
 
-// const uint64_t THREE_DAYS = 3 * 86400; // 3days
-const uint64_t THREE_DAYS = 1 * 60; // 1 minutes
+const uint64_t THREE_DAYS = 3 * 86400; // 3days
+// const uint64_t THREE_DAYS = 1 * 60; // 1 minutes
 
 /// USER ACTIONS
 void puton_service::createuser(const account_name account)
@@ -201,7 +201,7 @@ void puton_service::likepost(const account_name user, const uint64_t id)
         if (user != post.author && post.created_at + THREE_DAYS > now()) {
             post.point = post.point + 1;
         } else {
-            print("written 3 days ago\n");
+            print("Same author or Written 3 days ago\n");
         }
     });
 
@@ -247,7 +247,7 @@ void puton_service::cancellike(const account_name user, const uint64_t id)
         if (user != post.author && post.created_at + THREE_DAYS > now()) {
             post.point = post.point - 1;
         } else {
-            print("written 3 days ago\n");
+            print("Same author or Written 3 days ago\n");
         }
     });
 
@@ -301,7 +301,7 @@ void puton_service::addcmt(const account_name author, const uint64_t post_id, co
         if (author != post.author && post.created_at + THREE_DAYS > now()) {
             post.point = post.point + 1;
         } else {
-            print("written 3 days ago\n");
+            print("Same author or Written 3 days ago\n");
         }
     });
 
@@ -362,7 +362,7 @@ void puton_service::deletecmt(const account_name author, const uint64_t post_id,
             if (author != post.author && post.created_at + THREE_DAYS > now()) {
                 post.point = post.point - 1;
             } else {
-                print("written 3 days ago\n");
+                print("Same author or Written 3 days ago\n");
             }
         } else {
             // not found comment id

@@ -8,6 +8,8 @@ sleep 0.6
 
 while [ : ]
 do
-    cleos push action puton addcmt '["tak", "2", "commentcommentcommentcommentcommentcommentcommentcommentcommentcommentcommentcommentcommentcommentcommentcommentcomment"]' -p tak
+    cleos push action puton addcmt '["camry", "1", "comment"]' -p camry
+    sleep 0.6
+    cleos push action puton addcmt '["jinny", "1", "comment"]' -p jinny
     sleep 0.6
 done

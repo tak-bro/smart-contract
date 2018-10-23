@@ -18,7 +18,7 @@ $ cleos create account eosio curl EOS8Txt52C9jUD4Pc5LFsceeBy9RKi9MSVEV4WvoaB2KpE
 # Build contract
 $ ./build.sh puton puton
 
-# Create new buzzler user
+# Create new puton user
 $ cleos push action puton createuser '["tak"]' -p puton
 $ cleos push action puton createuser '["curl"]' -p puton
 
