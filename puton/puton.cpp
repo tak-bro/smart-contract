@@ -158,6 +158,25 @@ bool puton_service::checkLiked(const std::vector<postrow> &rows, const uint64_t 
     return false;
 }
 
+int puton_service::getLikedIndex(const std::vector<postrow> &rows, const uint64_t id)
+{
+    // binary search
+    int left = 0;
+    int right = rows.size() - 1;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (rows[mid].post_id < id) {
+            left = mid + 1;
+        } else if (id < rows[mid].post_id) {
+            right = mid - 1;
+        } else {
+            return mid;
+        }
+    }
+    return -1;
+}
+
 void puton_service::likepost(const account_name user, const uint64_t id)
 {
     // check user permission
@@ -211,8 +230,15 @@ void puton_service::cancellike(const account_name user, const uint64_t id)
     eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
 
     // check liked
-    bool isLiked = checkLiked(user_itr->liked_rows, id);
-    eosio_assert(isLiked, "The user did not like this post");
+    int likedIndex = getLikedIndex(user_itr->liked_rows, id);
+    eosio_assert(likedIndex > -1, "The user did not like this post");
+
+    // update liked_rows of user
+    user_table.modify(user_itr, _self, [&](auto &user) {
+        if (likedIndex > -1) {
+            user.liked_rows.erase(user.liked_rows.begin() + likedIndex);
+        }
+    });
 
     // update post_table
     post_table.modify(post_itr, _self, [&](auto &post) {
@@ -225,20 +251,7 @@ void puton_service::cancellike(const account_name user, const uint64_t id)
         }
     });
 
-    // update liked_rows of user
-    bool isFound = false;
-    user_table.modify(user_itr, _self, [&](auto &user) {
-        for (int i = 0; i < user.liked_rows.size(); i++) {
-            if (user.liked_rows[i].post_id == id) {
-                user.liked_rows.erase(user.liked_rows.begin() + i);
-                isFound = true;
-                break;
-            }
-        }
-    });
-
     // debug print
-    eosio_assert(isFound, "Could not found liked post");
     print("cancel like post#", id);
 }
 
