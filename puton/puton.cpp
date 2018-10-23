@@ -139,7 +139,7 @@ void puton_service::updateimages(const account_name author, const uint64_t id, c
     print("post#", id, " updated");
 }
 
-bool puton_service::checkLiked(const std::vector<postrow> &rows, const uint64_t id)
+int puton_service::getLikedIndex(const std::vector<postrow> &rows, const uint64_t id)
 {
     // binary search
     int left = 0;
@@ -152,13 +152,13 @@ bool puton_service::checkLiked(const std::vector<postrow> &rows, const uint64_t 
         } else if (id < rows[mid].post_id) {
             right = mid - 1;
         } else {
-            return true;
+            return mid;
         }
     }
-    return false;
+    return -1;
 }
 
-int puton_service::getLikedIndex(const std::vector<postrow> &rows, const uint64_t id)
+int puton_service::getCmtIdx(const std::vector<cmtrow> &rows, const uint16_t cmt_id)
 {
     // binary search
     int left = 0;
@@ -166,9 +166,9 @@ int puton_service::getLikedIndex(const std::vector<postrow> &rows, const uint64_
 
     while (left <= right) {
         int mid = left + (right - left) / 2;
-        if (rows[mid].post_id < id) {
+        if (rows[mid].cmt_id < cmt_id) {
             left = mid + 1;
-        } else if (id < rows[mid].post_id) {
+        } else if (cmt_id < rows[mid].cmt_id) {
             right = mid - 1;
         } else {
             return mid;
@@ -191,8 +191,8 @@ void puton_service::likepost(const account_name user, const uint64_t id)
     eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
 
     // check liked
-    bool alreadyLiked = checkLiked(user_itr->liked_rows, id);
-    eosio_assert(!alreadyLiked, "already liked");
+    int likedIndex = getLikedIndex(user_itr->liked_rows, id);
+    eosio_assert(likedIndex == -1, "already liked");
 
     // update post_table
     post_table.modify(post_itr, _self, [&](auto &post) {
@@ -201,7 +201,7 @@ void puton_service::likepost(const account_name user, const uint64_t id)
         if (user != post.author && post.created_at + THREE_DAYS > now()) {
             post.point = post.point + 1;
         } else {
-            print("written more than 3 days ago\n");
+            print("written 3 days ago\n");
         }
     });
 
@@ -231,11 +231,11 @@ void puton_service::cancellike(const account_name user, const uint64_t id)
 
     // check liked
     int likedIndex = getLikedIndex(user_itr->liked_rows, id);
-    eosio_assert(likedIndex > -1, "The user did not like this post");
+    eosio_assert(likedIndex != -1, "The user did not like this post");
 
     // update liked_rows of user
     user_table.modify(user_itr, _self, [&](auto &user) {
-        if (likedIndex > -1) {
+        if (likedIndex != -1) {
             user.liked_rows.erase(user.liked_rows.begin() + likedIndex);
         }
     });
@@ -247,7 +247,7 @@ void puton_service::cancellike(const account_name user, const uint64_t id)
         if (user != post.author && post.created_at + THREE_DAYS > now()) {
             post.point = post.point - 1;
         } else {
-            print("written more than 3 days ago\n");
+            print("written 3 days ago\n");
         }
     });
 
@@ -301,7 +301,7 @@ void puton_service::addcmt(const account_name author, const uint64_t post_id, co
         if (author != post.author && post.created_at + THREE_DAYS > now()) {
             post.point = post.point + 1;
         } else {
-            print("written more than 3 days ago\n");
+            print("written 3 days ago\n");
         }
     });
 
@@ -322,21 +322,18 @@ void puton_service::updatecmt(const account_name author, const uint64_t post_id,
     eosio_assert(itr != post_table.end(), "PostTable does not has id");
 
     // update cmt row
-    bool isFound = false;
     post_table.modify(itr, _self, [&](auto &post) {
-        for (int i = 0; i < post.cmt_rows.size(); i++) {
-            if (post.cmt_rows[i].cmt_id == cmt_id) {
-                // check cmt author
-                eosio_assert(post.cmt_rows[i].author == author, "Not the author of this cmt");
-                post.cmt_rows[i].cmt_hash = to_update;
-                isFound = true;
-                break;
-            }
+        int cmtIdx = getCmtIdx(post.cmt_rows, cmt_id);
+        if (cmtIdx != -1) {
+            // check author of comment
+            eosio_assert(post.cmt_rows[cmtIdx].author == author, "Not the author of this cmt");
+            post.cmt_rows[cmtIdx].cmt_hash = to_update;
+        } else {
+            eosio_assert(false, "Could not found cmt");
         }
     });
 
     // debug print
-    eosio_assert(isFound, "Could not found cmt");
     print("comment updated");
 }
 
@@ -354,28 +351,26 @@ void puton_service::deletecmt(const account_name author, const uint64_t post_id,
     eosio_assert(itr != post_table.end(), "PostTable does not has id");
 
     // update cmt row
-    bool isFound = false;
     post_table.modify(itr, _self, [&](auto &post) {
-        for (int i = 0; i < post.cmt_rows.size(); i++) {
-            if (post.cmt_rows[i].cmt_id == cmt_id) {
-                // check cmt author
-                eosio_assert(post.cmt_rows[i].author == author, "Not the author of this cmt");
-                post.cmt_rows.erase(post.cmt_rows.begin() + i);
-                isFound = true;
+        int cmtIdx = getCmtIdx(post.cmt_rows, cmt_id);
+        if (cmtIdx != -1) {
+            // check cmt author
+            eosio_assert(post.cmt_rows[cmtIdx].author == author, "Not the author of this cmt");
+            post.cmt_rows.erase(post.cmt_rows.begin() + cmtIdx);
 
-                // add point to post
-                if (author != post.author && post.created_at + THREE_DAYS > now()) {
-                    post.point = post.point - 1;
-                } else {
-                    print("written more than 3 days ago\n");
-                }
-                break;
+            // subtract point 
+            if (author != post.author && post.created_at + THREE_DAYS > now()) {
+                post.point = post.point - 1;
+            } else {
+                print("written 3 days ago\n");
             }
+        } else {
+            // not found comment id
+            eosio_assert(false, "Could not found cmt");
         }
     });
 
     // debug print
-    eosio_assert(isFound, "Could not found cmt");
     print("comment deleted");
 }
 
@@ -387,4 +382,3 @@ void puton_service::printrandom(account_name author)
     uint32_t random_num = random.range(99999);
     print("random# ", random_num);
 }
-
