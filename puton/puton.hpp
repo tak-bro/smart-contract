@@ -108,8 +108,8 @@ class puton_service: public eosio::contract {
         std::vector<string> empty_imagerows;
 
         // private method
-        int getLikedIndex(const std::vector<postrow> &rows, const uint64_t id);
-        int getCmtIdx(const std::vector<cmtrow> &rows, const uint16_t cmt_id);
+        int getIndex(const std::vector<postrow> &rows, const uint64_t id);
+        int getIndex(const std::vector<cmtrow> &rows, const uint16_t cmt_id);
  };
 
 EOSIO_ABI(puton_service, (createuser)(addpost)(addimages)(updatepost)(likepost)(cancellike)(updateimages)(deletepost)(printrandom)(addcmt)(updatecmt)(deletecmt))

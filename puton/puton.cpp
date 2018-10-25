@@ -139,7 +139,7 @@ void puton_service::updateimages(const account_name author, const uint64_t id, c
     print("post#", id, " updated");
 }
 
-int puton_service::getLikedIndex(const std::vector<postrow> &rows, const uint64_t id)
+int puton_service::getIndex(const std::vector<postrow> &rows, const uint64_t id)
 {
     // binary search
     int left = 0;
@@ -158,7 +158,7 @@ int puton_service::getLikedIndex(const std::vector<postrow> &rows, const uint64_
     return -1;
 }
 
-int puton_service::getCmtIdx(const std::vector<cmtrow> &rows, const uint16_t cmt_id)
+int puton_service::getIndex(const std::vector<cmtrow> &rows, const uint16_t cmt_id)
 {
     // binary search
     int left = 0;
@@ -191,7 +191,7 @@ void puton_service::likepost(const account_name user, const uint64_t id)
     eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
 
     // check liked
-    int likedIndex = getLikedIndex(user_itr->liked_rows, id);
+    int likedIndex = getIndex(user_itr->liked_rows, id);
     eosio_assert(likedIndex == -1, "already liked");
 
     // update post_table
@@ -230,7 +230,7 @@ void puton_service::cancellike(const account_name user, const uint64_t id)
     eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
 
     // check liked
-    int likedIndex = getLikedIndex(user_itr->liked_rows, id);
+    int likedIndex = getIndex(user_itr->liked_rows, id);
     eosio_assert(likedIndex != -1, "The user did not like this post");
 
     // update liked_rows of user
@@ -323,7 +323,7 @@ void puton_service::updatecmt(const account_name author, const uint64_t post_id,
 
     // update cmt row
     post_table.modify(itr, _self, [&](auto &post) {
-        int cmtIdx = getCmtIdx(post.cmt_rows, cmt_id);
+        int cmtIdx = getIndex(post.cmt_rows, cmt_id);
         if (cmtIdx != -1) {
             // check author of comment
             eosio_assert(post.cmt_rows[cmtIdx].author == author, "Not the author of this cmt");
@@ -352,7 +352,7 @@ void puton_service::deletecmt(const account_name author, const uint64_t post_id,
 
     // update cmt row
     post_table.modify(itr, _self, [&](auto &post) {
-        int cmtIdx = getCmtIdx(post.cmt_rows, cmt_id);
+        int cmtIdx = getIndex(post.cmt_rows, cmt_id);
         if (cmtIdx != -1) {
             // check cmt author
             eosio_assert(post.cmt_rows[cmtIdx].author == author, "Not the author of this cmt");

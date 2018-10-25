@@ -56,10 +56,10 @@ $ cleos push action puton deletepost '["tak", "1"]' -p tak
 $ cleos push action puton addcmt '["tak", "2", "comment"]' -p tak
 
 # Update comment
-$ cleos push action puton updatecmt '["tak", "2", "1", "updated comment"]' -p tak
+$ cleos push action puton updatecmt '["camry", "1", "1", "updated comment"]' -p camry
 
 # Delete comment
-$ cleos push action puton deletecmt '["tak", "2", "2"]' -p tak
+$ cleos push action puton deletecmt '["tak", "1", "2"]' -p tak
 
 # Check DB
 $ cleos get table puton puton users
