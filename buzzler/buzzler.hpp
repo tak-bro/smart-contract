@@ -1,8 +1,12 @@
 #include <eosiolib/eosio.hpp> 
 #include <string>
+#include <random.cpp>
 
 using namespace eosio; 
 using namespace std;
+
+// define singleton
+random_gen random_gen::instance;
 
 class buzzler_service: public eosio::contract {
 
@@ -81,6 +85,10 @@ class buzzler_service: public eosio::contract {
         // @abi action
         void cmtsbypostid(const uint64_t post_id);
 
+        /// ETC
+        // @abi action
+        void printrandom(account_name author); // for test
+
       private:
 
         // @abi table users 
@@ -136,4 +144,4 @@ class buzzler_service: public eosio::contract {
         > comment_table;
  };
 
-EOSIO_ABI(buzzler_service, (createuser)(updatetoken)(writepost)(updatepost)(deletepost)(postbyid)(postsbyuser)(writecmt)(updatecmt)(deletecmt)(cmtbyid)(cmtsbypostid))
+EOSIO_ABI(buzzler_service, (createuser)(updatetoken)(writepost)(updatepost)(deletepost)(postbyid)(postsbyuser)(writecmt)(updatecmt)(deletecmt)(cmtbyid)(cmtsbypostid)(printrandom))

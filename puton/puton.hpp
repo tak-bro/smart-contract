@@ -1,13 +1,9 @@
 #include <string>
 #include <vector>
 #include <eosiolib/eosio.hpp> 
-#include <random.cpp>
 
 using namespace eosio; 
 using namespace std;
-
-// define singleton
-random_gen random_gen::instance;
 
 // struct post for user_table
 struct postrow {
@@ -64,11 +60,7 @@ class puton_service: public eosio::contract {
 
         // @abi action
         void deletecmt(const account_name author, const uint64_t post_id, const uint16_t cmt_id);
-
-        /// ETC
-        // @abi action
-        void printrandom(account_name author); // for test
-
+      
     private:
 
         // @abi table users 
@@ -112,4 +104,4 @@ class puton_service: public eosio::contract {
         int getIndex(const std::vector<cmtrow> &rows, const uint16_t cmt_id);
  };
 
-EOSIO_ABI(puton_service, (createuser)(addpost)(addimages)(updatepost)(likepost)(cancellike)(updateimages)(deletepost)(printrandom)(addcmt)(updatecmt)(deletecmt))
+EOSIO_ABI(puton_service, (createuser)(addpost)(addimages)(updatepost)(likepost)(cancellike)(updateimages)(deletepost)(addcmt)(updatecmt)(deletecmt))

@@ -310,3 +310,12 @@ void buzzler_service::cmtsbypostid(const uint64_t post_id)
         print("created_at: ",  comment_itr->created_at);
     }
 }
+
+/// ETC
+void buzzler_service::printrandom(account_name author)
+{
+    // print random
+    auto &random = random_gen::get_instance(author);
+    uint32_t random_num = random.range(99999);
+    print("random# ", random_num);
+}
