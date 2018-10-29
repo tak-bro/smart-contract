@@ -139,44 +139,6 @@ void puton_service::updateimages(const account_name author, const uint64_t id, c
     print("post#", id, " updated");
 }
 
-int puton_service::getIndex(const std::vector<postrow> &rows, const uint64_t id)
-{
-    // binary search
-    int left = 0;
-    int right = rows.size() - 1;
-
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        if (rows[mid].post_id < id) {
-            left = mid + 1;
-        } else if (id < rows[mid].post_id) {
-            right = mid - 1;
-        } else {
-            return mid;
-        }
-    }
-    return -1;
-}
-
-int puton_service::getIndex(const std::vector<cmtrow> &rows, const uint16_t cmt_id)
-{
-    // binary search
-    int left = 0;
-    int right = rows.size() - 1;
-
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        if (rows[mid].cmt_id < cmt_id) {
-            left = mid + 1;
-        } else if (cmt_id < rows[mid].cmt_id) {
-            right = mid - 1;
-        } else {
-            return mid;
-        }
-    }
-    return -1;
-}
-
 void puton_service::likepost(const account_name user, const uint64_t id)
 {
     // check user permission
@@ -235,9 +197,7 @@ void puton_service::cancellike(const account_name user, const uint64_t id)
 
     // update liked_rows of user
     user_table.modify(user_itr, _self, [&](auto &user) {
-        if (likedIndex != -1) {
-            user.liked_rows.erase(user.liked_rows.begin() + likedIndex);
-        }
+        user.liked_rows.erase(user.liked_rows.begin() + likedIndex);
     });
 
     // update post_table
@@ -323,14 +283,14 @@ void puton_service::updatecmt(const account_name author, const uint64_t post_id,
 
     // update cmt row
     post_table.modify(itr, _self, [&](auto &post) {
+        // check cmt index
         int cmtIdx = getIndex(post.cmt_rows, cmt_id);
-        if (cmtIdx != -1) {
-            // check author of comment
-            eosio_assert(post.cmt_rows[cmtIdx].author == author, "Not the author of this cmt");
-            post.cmt_rows[cmtIdx].cmt_hash = to_update;
-        } else {
-            eosio_assert(false, "Could not found cmt");
-        }
+        eosio_assert(cmtIdx != -1, "Could not found cmt");
+
+        // check author
+        eosio_assert(post.cmt_rows[cmtIdx].author == author, "Not the author of this cmt");
+
+        post.cmt_rows[cmtIdx].cmt_hash = to_update;
     });
 
     // debug print
@@ -353,23 +313,60 @@ void puton_service::deletecmt(const account_name author, const uint64_t post_id,
     // update cmt row
     post_table.modify(itr, _self, [&](auto &post) {
         int cmtIdx = getIndex(post.cmt_rows, cmt_id);
-        if (cmtIdx != -1) {
-            // check cmt author
-            eosio_assert(post.cmt_rows[cmtIdx].author == author, "Not the author of this cmt");
-            post.cmt_rows.erase(post.cmt_rows.begin() + cmtIdx);
+        eosio_assert(cmtIdx != -1, "Could not found cmt");
 
-            // subtract point 
-            if (author != post.author && post.created_at + THREE_DAYS > now()) {
-                post.point = post.point - 1;
-            } else {
-                print("Same author or Written 3 days ago\n");
-            }
+        // check cmt author
+        eosio_assert(post.cmt_rows[cmtIdx].author == author, "Not the author of this cmt");
+        post.cmt_rows.erase(post.cmt_rows.begin() + cmtIdx);
+
+        // subtract point
+        if (author != post.author && post.created_at + THREE_DAYS > now()) {
+            post.point = post.point - 1;
         } else {
-            // not found comment id
-            eosio_assert(false, "Could not found cmt");
+            print("Same author or Written 3 days ago\n");
         }
     });
 
     // debug print
     print("comment deleted");
+}
+
+// Private Functions
+
+int puton_service::getIndex(const std::vector<postrow> &rows, const uint64_t id)
+{
+    // binary search
+    int left = 0;
+    int right = rows.size() - 1;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (rows[mid].post_id < id) {
+            left = mid + 1;
+        } else if (id < rows[mid].post_id) {
+            right = mid - 1;
+        } else {
+            return mid;
+        }
+    }
+    return -1;
+}
+
+int puton_service::getIndex(const std::vector<cmtrow> &rows, const uint16_t cmt_id)
+{
+    // binary search
+    int left = 0;
+    int right = rows.size() - 1;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (rows[mid].cmt_id < cmt_id) {
+            left = mid + 1;
+        } else if (cmt_id < rows[mid].cmt_id) {
+            right = mid - 1;
+        } else {
+            return mid;
+        }
+    }
+    return -1;
 }
