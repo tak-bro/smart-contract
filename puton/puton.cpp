@@ -7,7 +7,7 @@ const uint64_t THREE_DAYS = 3 * 86400; // 3days
 void puton_service::createuser(const account_name account)
 {
     // check puton server
-    require_auth(_self);
+    require_auth(account);
 
     // check account on user_table
     auto itr = user_table.find(account);

@@ -3,7 +3,9 @@
 ## TODO
 - [x] post_rows를 user table에 넣어야할듯 
 - [x] post 테이블에 comment_rows 추가
-- [ ] comment 작성하면 point 올라가게
+- [x] comment 작성하면 point 올라가게
+- [ ] image_urls -> post_ipfs_hash
+- [x] createuser -> permission
 
 ## how to use
 
@@ -19,8 +21,8 @@ $ cleos create account eosio curl EOS8Txt52C9jUD4Pc5LFsceeBy9RKi9MSVEV4WvoaB2KpE
 $ ./build.sh puton puton
 
 # Create new puton user
-$ cleos push action puton createuser '["tak"]' -p puton
-$ cleos push action puton createuser '["curl"]' -p puton
+$ cleos push action puton createuser '["tak"]' -p tak
+$ cleos push action puton createuser '["curl"]' -p curl
 
 # Get Random number
 $ cleos push action puton getrandom '["tak"]' -p puton
