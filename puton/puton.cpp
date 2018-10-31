@@ -65,6 +65,10 @@ void puton_service::updatepost(const account_name author, const uint64_t id, con
     auto post_itr = post_table.find(id);
     eosio_assert(post_itr != post_table.end(), "PostTable does not has id");
 
+    // check author
+    bool is_author = post_itr->author == author;
+    eosio_assert(is_author, "Not the author of this post");
+
     // update post_table
     post_table.modify(post_itr, _self, [&](auto &post) {
         post.ipfs_addr = ipfs_addr;
@@ -159,9 +163,17 @@ void puton_service::deletepost(const account_name author, const uint64_t id)
     // check user permission
     require_auth(author);
 
+    // check account on user_table
+    auto user_itr = user_table.find(author);
+    eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
+
     // check id on post_table
     auto itr = post_table.find(id);
     eosio_assert(itr != post_table.end(), "PostTable does not has id");
+
+    // check author
+    bool is_author = (itr->author == author);
+    eosio_assert(is_author, "Not the author of this post");
 
     // delete post
     post_table.erase(itr);
