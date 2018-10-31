@@ -4,7 +4,7 @@
 - [x] post_rows를 user table에 넣어야할듯 
 - [x] post 테이블에 comment_rows 추가
 - [x] comment 작성하면 point 올라가게
-- [ ] image_urls -> post_ipfs_hash
+- [x] image_urls -> post_ipfs_hash
 - [x] createuser -> permission
 
 ## how to use

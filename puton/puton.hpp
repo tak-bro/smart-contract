@@ -3,18 +3,19 @@
 #include <eosiolib/eosio.hpp> 
 
 using namespace eosio; 
-using namespace std;
 
 // struct post for user_table
 struct postrow {
     uint64_t post_id = 0;
+    // TODO: add additional variable
+    // time liked_at = 0;
 };
 
 // struct cmt for post_table
 struct cmtrow {
     uint16_t cmt_id = 0;
     account_name author = 0;
-    string cmt_hash = "";
+    std::string cmt_hash = "";
     time created_at = 0;
 };
 
@@ -25,19 +26,22 @@ class puton_service: public eosio::contract {
                                           user_table(self, self),
                                           post_table(self, self) {}
 
-        /// USER ACTIONS
+        /* 
+         * USER ACTIONS
+         */
+
         // @abi action 
         void createuser(const account_name account);
 
-        /// POST ACTIONS
-        // @abi action 
-        void addpost(const account_name author, const string hash_value);
+        /* 
+         * POST ACTIONS
+         */
 
         // @abi action 
-        void updatepost(const account_name author, const uint64_t id, const string to_update);
+        void addpost(const account_name author, const std::string ipfs_addr);
 
         // @abi action 
-        void updateimages(const account_name author, const uint64_t id, const string to_update, std::vector<std::string> args);
+        void updatepost(const account_name author, const uint64_t id, const std::string ipfs_addr);
 
         // @abi action 
         void likepost(const account_name user, const uint64_t id);
@@ -48,15 +52,15 @@ class puton_service: public eosio::contract {
          // @abi action
         void deletepost(const account_name author, const uint64_t id);
 
-        // @abi action
-        void addimages(const account_name author, const string hash_value, std::vector<std::string> args);
+        /* 
+         * COMMENT ACTIONS
+         */
 
-        /// COMMENT ACTIONS
         // @abi action
-        void addcmt(const account_name author, const uint64_t post_id, const string hash_value);
+        void addcmt(const account_name author, const uint64_t post_id, const std::string cmt_hash);
 
         // @abi action 
-        void updatecmt(const account_name author, const uint64_t post_id, const uint16_t cmt_id, const string to_update);
+        void updatecmt(const account_name author, const uint64_t post_id, const uint16_t cmt_id, const std::string cmt_hash);
 
         // @abi action
         void deletecmt(const account_name author, const uint64_t post_id, const uint16_t cmt_id);
@@ -77,17 +81,16 @@ class puton_service: public eosio::contract {
         struct post {
             uint64_t id;
             account_name author;
-            std::string post_hash;
-            std::vector<std::string> image_urls;
+            std::string ipfs_addr;
             std::vector<cmtrow> cmt_rows;
-            uint16_t last_id; // for cmt
+            uint16_t last_id; // for cmt_rows
             uint16_t like_cnt;
             uint16_t point;
             time created_at;
 
             auto primary_key() const { return id; }
 
-            EOSLIB_SERIALIZE(post, (id)(author)(post_hash)(image_urls)(cmt_rows)(last_id)(like_cnt)(point)(created_at))
+            EOSLIB_SERIALIZE(post, (id)(author)(ipfs_addr)(cmt_rows)(last_id)(like_cnt)(point)(created_at))
         };
 
         // define tables
@@ -95,13 +98,12 @@ class puton_service: public eosio::contract {
         multi_index<N(posts), post> post_table;
 
         // private variable
-        std::vector<postrow> empty_postrows;
-        std::vector<cmtrow> empty_cmtrows;
-        std::vector<string> empty_imagerows;
+        std::vector<postrow> empty_post_rows;
+        std::vector<cmtrow> empty_cmt_rows;
 
         // private method
         int getIndex(const std::vector<postrow> &rows, const uint64_t id);
         int getIndex(const std::vector<cmtrow> &rows, const uint16_t cmt_id);
  };
 
-EOSIO_ABI(puton_service, (createuser)(addpost)(addimages)(updatepost)(likepost)(cancellike)(updateimages)(deletepost)(addcmt)(updatecmt)(deletecmt))
+EOSIO_ABI(puton_service, (createuser)(addpost)(updatepost)(likepost)(cancellike)(deletepost)(addcmt)(updatecmt)(deletecmt))

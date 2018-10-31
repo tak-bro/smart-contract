@@ -1,12 +1,12 @@
 #include<puton.hpp>
 
-const uint64_t THREE_DAYS = 3 * 86400; // 3days
-// const uint64_t THREE_DAYS = 1 * 60; // 1 minutes
+const uint64_t THREE_DAYS = 3 * 86400; // 3 days
+// const uint64_t THREE_DAYS = 3 * 60; // 3 minutes
 
 /// USER ACTIONS
 void puton_service::createuser(const account_name account)
 {
-    // check puton server
+    // check account auth
     require_auth(account);
 
     // check account on user_table
@@ -16,7 +16,7 @@ void puton_service::createuser(const account_name account)
     // create user
     user_table.emplace(_self, [&](auto& u) {
         u.account = account;
-        u.liked_rows = empty_postrows;
+        u.liked_rows = empty_post_rows;
     });
 
     // debug print
@@ -24,7 +24,7 @@ void puton_service::createuser(const account_name account)
 }
 
 /// POST ACTIONS
-void puton_service::addpost(const account_name user, const string hash_value)
+void puton_service::addpost(const account_name user, const std::string ipfs_addr)
 {
     // check user permission
     require_auth(user);
@@ -40,55 +40,19 @@ void puton_service::addpost(const account_name user, const string hash_value)
     post_table.emplace(_self, [&](auto& p) {
         p.id = post_id;
         p.author = user;
-        p.post_hash = hash_value;
-        p.created_at = now();
-        p.image_urls = empty_imagerows;
-        p.cmt_rows = empty_cmtrows;
+        p.ipfs_addr = ipfs_addr;
+        p.cmt_rows = empty_cmt_rows;
+        p.last_id = 0;
         p.like_cnt = 0;
         p.point = 0;
-        p.last_id = 0;
+        p.created_at = now();
     });
 
     // debug print
     print("post#", post_id, " created");
 }
 
-void puton_service::addimages(const account_name user, const string hash_value, std::vector<std::string> args)
-{
-    // check user permission
-    require_auth(user);
-
-    // check account on user_table
-    auto user_itr = user_table.find(user);
-    eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
-
-    // get unique post_id from post_table
-    uint64_t post_id = post_table.available_primary_key();
-
-    // push temp vector
-    std::vector<std::string> image_urls;
-    for (auto &arg : args) {
-        image_urls.push_back(arg);
-    }
-
-    // create post to post_table
-    post_table.emplace(_self, [&](auto& p) {
-        p.id = post_id;
-        p.author = user;
-        p.post_hash = hash_value;
-        p.created_at = now();
-        p.cmt_rows = empty_cmtrows;
-        p.like_cnt = 0;
-        p.point = 0;
-        p.image_urls = image_urls;
-        p.last_id = 0;
-    });
-
-    // debug print
-    print("post#", post_id, " created");
-}
-
-void puton_service::updatepost(const account_name author, const uint64_t id, const string to_update)
+void puton_service::updatepost(const account_name author, const uint64_t id, const std::string ipfs_addr)
 {
     // check user permission
     require_auth(author);
@@ -103,36 +67,7 @@ void puton_service::updatepost(const account_name author, const uint64_t id, con
 
     // update post_table
     post_table.modify(post_itr, _self, [&](auto &post) {
-        post.post_hash = to_update;
-    });
-
-    // debug print
-    print("post#", id, " updated");
-}
-
-void puton_service::updateimages(const account_name author, const uint64_t id, const string to_update, std::vector<std::string> args)
-{
-    // check user permission
-    require_auth(author);
-
-    // check account on user_table
-    auto user_itr = user_table.find(author);
-    eosio_assert(user_itr != user_table.end(), "UserTable does not has a user");
-
-    // check post on post_table
-    auto post_itr = post_table.find(id);
-    eosio_assert(post_itr != post_table.end(), "PostTable does not has id");
-
-    // push temp vector
-    std::vector<std::string> image_urls;
-    for (auto &arg : args) {
-        image_urls.push_back(arg);
-    }
-
-    // update post_table
-    post_table.modify(post_itr, _self, [&](auto &post) {
-        post.post_hash = to_update;
-        post.image_urls = image_urls;
+        post.ipfs_addr = ipfs_addr;
     });
 
     // debug print
@@ -159,11 +94,13 @@ void puton_service::likepost(const account_name user, const uint64_t id)
     // update post_table
     post_table.modify(post_itr, _self, [&](auto &post) {
         post.like_cnt = post.like_cnt + 1;
+
         // calculate time range
-        if (user != post.author && post.created_at + THREE_DAYS > now()) {
+        bool is_author = (user == post.author);
+        bool is_compensation_period = (post.created_at + THREE_DAYS > now());
+
+        if (!is_author && is_compensation_period) {
             post.point = post.point + 1;
-        } else {
-            print("Same author or Written 3 days ago\n");
         }
     });
 
@@ -203,11 +140,13 @@ void puton_service::cancellike(const account_name user, const uint64_t id)
     // update post_table
     post_table.modify(post_itr, _self, [&](auto &post) {
         post.like_cnt = post.like_cnt - 1;
+
         // calculate time range
-        if (user != post.author && post.created_at + THREE_DAYS > now()) {
+        bool is_author = (user == post.author);
+        bool is_compensation_period = (post.created_at + THREE_DAYS > now());
+
+        if (!is_author && is_compensation_period) {
             post.point = post.point - 1;
-        } else {
-            print("Same author or Written 3 days ago\n");
         }
     });
 
@@ -232,7 +171,7 @@ void puton_service::deletepost(const account_name author, const uint64_t id)
 }
 
 /// COMMENT ACTION
-void puton_service::addcmt(const account_name author, const uint64_t post_id, const string hash_value)
+void puton_service::addcmt(const account_name author, const uint64_t post_id, const std::string cmt_hash)
 {
     // check user permission
     require_auth(author);
@@ -248,7 +187,7 @@ void puton_service::addcmt(const account_name author, const uint64_t post_id, co
     // set cmtrow
     cmtrow row;
     row.author = author;
-    row.cmt_hash = hash_value;
+    row.cmt_hash = cmt_hash;
     row.created_at = now();
 
     // add cmt to post row
@@ -258,17 +197,18 @@ void puton_service::addcmt(const account_name author, const uint64_t post_id, co
         post.cmt_rows.push_back(row);
 
         // add point to post 
-        if (author != post.author && post.created_at + THREE_DAYS > now()) {
+        bool is_author = (author == post.author);
+        bool is_compensation_period = (post.created_at + THREE_DAYS > now());
+
+        if (!is_author && is_compensation_period) {
             post.point = post.point + 1;
-        } else {
-            print("Same author or Written 3 days ago\n");
         }
     });
 
     print("comment added to post#", itr->id);
 }
 
-void puton_service::updatecmt(const account_name author, const uint64_t post_id, const uint16_t cmt_id, const string to_update)
+void puton_service::updatecmt(const account_name author, const uint64_t post_id, const uint16_t cmt_id, const std::string cmt_hash)
 {
     // check user permission
     require_auth(author);
@@ -284,13 +224,13 @@ void puton_service::updatecmt(const account_name author, const uint64_t post_id,
     // update cmt row
     post_table.modify(itr, _self, [&](auto &post) {
         // check cmt index
-        int cmtIdx = getIndex(post.cmt_rows, cmt_id);
-        eosio_assert(cmtIdx != -1, "Could not found cmt");
+        int cmt_idx = getIndex(post.cmt_rows, cmt_id);
+        eosio_assert(cmt_idx != -1, "Could not found cmt");
 
         // check author
-        eosio_assert(post.cmt_rows[cmtIdx].author == author, "Not the author of this cmt");
+        eosio_assert(post.cmt_rows[cmt_idx].author == author, "Not the author of this cmt");
 
-        post.cmt_rows[cmtIdx].cmt_hash = to_update;
+        post.cmt_rows[cmt_idx].cmt_hash = cmt_hash;
     });
 
     // debug print
@@ -312,18 +252,19 @@ void puton_service::deletecmt(const account_name author, const uint64_t post_id,
 
     // update cmt row
     post_table.modify(itr, _self, [&](auto &post) {
-        int cmtIdx = getIndex(post.cmt_rows, cmt_id);
-        eosio_assert(cmtIdx != -1, "Could not found cmt");
+        int cmt_idx = getIndex(post.cmt_rows, cmt_id);
+        eosio_assert(cmt_idx != -1, "Could not found cmt");
 
         // check cmt author
-        eosio_assert(post.cmt_rows[cmtIdx].author == author, "Not the author of this cmt");
-        post.cmt_rows.erase(post.cmt_rows.begin() + cmtIdx);
+        eosio_assert(post.cmt_rows[cmt_idx].author == author, "Not the author of this cmt");
+        post.cmt_rows.erase(post.cmt_rows.begin() + cmt_idx);
 
         // subtract point
-        if (author != post.author && post.created_at + THREE_DAYS > now()) {
+        bool is_author = (author == post.author);
+        bool is_compensation_period = (post.created_at + THREE_DAYS > now());
+
+        if (!is_author && is_compensation_period) {
             post.point = post.point - 1;
-        } else {
-            print("Same author or Written 3 days ago\n");
         }
     });
 
