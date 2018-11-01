@@ -13,10 +13,10 @@ class random_gen
     uint64_t seed = 0;
 
   public:
-
     static random_gen &get_instance(account_name player)
     {
-        if (instance.seed == 0) {
+        if (instance.seed == 0)
+        {
             instance.seed = tapos_block_prefix() + player;
         }
         return instance;

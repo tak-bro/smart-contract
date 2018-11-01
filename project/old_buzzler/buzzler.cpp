@@ -1,4 +1,4 @@
-#include<buzzler.hpp>
+#include <buzzler.hpp>
 
 void buzzler::hello(account_name user)
 {
@@ -6,9 +6,9 @@ void buzzler::hello(account_name user)
 }
 
 void buzzler::create(const account_name account,
-                     const string&      nickname,
-                     const string&      univ,
-                     const string&      major)
+                     const string &nickname,
+                     const string &univ,
+                     const string &major)
 {
     require_auth(account);
 
@@ -18,12 +18,12 @@ void buzzler::create(const account_name account,
     eosio_assert(itr == users.end(), "Account already has a user");
 
     // create user
-    users.emplace(account, [&](auto& p) {
-        p.account    = account;
-        p.nickname   = nickname;
-        p.univ       = univ;
-        p.major      = major;
-        p.token      = 0;
+    users.emplace(account, [&](auto &p) {
+        p.account = account;
+        p.nickname = nickname;
+        p.univ = univ;
+        p.major = major;
+        p.token = 0;
         p.created_at = now();
     });
 
@@ -32,10 +32,10 @@ void buzzler::create(const account_name account,
 }
 
 void buzzler::update(const account_name account,
-                     const string&      nickname,
-                     const string&      univ,
-                     const string&      major,
-                     uint64_t           token)
+                     const string &nickname,
+                     const string &univ,
+                     const string &major,
+                     uint64_t token)
 {
     require_auth(account);
 
@@ -45,11 +45,11 @@ void buzzler::update(const account_name account,
     eosio_assert(itr != users.end(), "Account does not has a user");
 
     // update user
-    users.modify(itr, account, [&](auto& p) {
+    users.modify(itr, account, [&](auto &p) {
         p.nickname = nickname;
-        p.univ     = univ;
-        p.major    = major;
-        p.token    = token;
+        p.univ = univ;
+        p.major = major;
+        p.token = token;
     });
 
     // debug print
@@ -80,12 +80,11 @@ void buzzler::getuser(const account_name account)
     eosio_assert(itr != users.end(), "Account does not has a user");
 
     // print user
-    print("Account: ",  name{itr->account},    ", ");
+    print("Account: ", name{itr->account}, ", ");
     print("Nickname: ", itr->nickname.c_str(), ", ");
-    print("Univ: ",     itr->univ.c_str(),     ", ");
-    print("Major: ",    itr->major.c_str(),    ", ");
-    print("Token: ",    itr->token);
-
+    print("Univ: ", itr->univ.c_str(), ", ");
+    print("Major: ", itr->major.c_str(), ", ");
+    print("Token: ", itr->token);
 }
 
 void buzzler::bytoken(uint64_t to_find_token)
@@ -94,13 +93,14 @@ void buzzler::bytoken(uint64_t to_find_token)
     auto token_index = users.get_index<N(token)>();
     auto itr = token_index.find(to_find_token);
 
-    for (; itr != token_index.end() && itr->token == to_find_token; ++itr) {
+    for (; itr != token_index.end() && itr->token == to_find_token; ++itr)
+    {
         // print user
-        print("Account: ",  name{itr->account},    ", ");
+        print("Account: ", name{itr->account}, ", ");
         print("Nickname: ", itr->nickname.c_str(), ", ");
-        print("Univ: ",     itr->univ.c_str(),     ", ");
-        print("Major: ",    itr->major.c_str(),    ", ");
-        print("Token: ",    itr->token,            "\n");
+        print("Univ: ", itr->univ.c_str(), ", ");
+        print("Major: ", itr->major.c_str(), ", ");
+        print("Token: ", itr->token, "\n");
     }
 }
 
@@ -110,7 +110,7 @@ void buzzler::rangetoken(uint64_t less, uint64_t over)
     auto token_index = users.get_index<N(token)>();
 
     auto begin = token_index.lower_bound(less);
-    auto end   = token_index.lower_bound(over);
+    auto end = token_index.lower_bound(over);
 
     for_each(begin, end, [&](auto &p) {
         print(name{p.account}, "'s token: ", p.token, "\n");

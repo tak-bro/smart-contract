@@ -55,8 +55,6 @@ $ cleos push action sender send '["my_message"]' -p sender
 # 3초에 한번씩 액션 수행 -> 10번까지
 $ cleos push action sender spam '["deferred message", "3", "0", "10"]' -p sender
 
-# deferrered transaction
-# ["메세지", "interval sec", "index", "iterations"]
+# deferrered transaction with inline action
 $ cleos push action sender defertx '["deferred message", "5", "0", "10"]' -p sender
-
 ```
