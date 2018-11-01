@@ -1,5 +1,5 @@
-# Inline action
-- communicate with smart contract
+# Deferred Transaction with inline action
+- deferred transaction
 
 ## How to use
 
@@ -47,11 +47,16 @@ $ cleos set contract recipient recipient
 ### action
 
 ```sh
-$ cleos push action sender send '["sender", "my_message"]' -p sender
+# inline action
+$ cleos push action sender send '["my_message"]' -p sender
 
-# print message from recipient func
-3480146ms thread-0   apply_context.cpp:28          print_debug          ]
-[(recipient,receive)->recipient]: CONSOLE OUTPUT BEGIN =====================
-sender, recipient, my_message
-[(recipient,receive)->recipient]: CONSOLE OUTPUT END   =====================
+# deferrered transaction
+# ["메세지", "interval sec", "index", "iterations"]
+# 3초에 한번씩 액션 수행 -> 10번까지
+$ cleos push action sender spam '["deferred message", "3", "0", "10"]' -p sender
+
+# deferrered transaction
+# ["메세지", "interval sec", "index", "iterations"]
+$ cleos push action sender defertx '["deferred message", "5", "0", "10"]' -p sender
+
 ```
